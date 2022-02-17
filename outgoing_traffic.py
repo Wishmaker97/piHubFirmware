@@ -7,14 +7,19 @@ import requests
 from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
+import serial
 
+def getCurrentMeterReading(meter_serial_number):
+    print(meter_serial_number)
+    return "10.7 kWh"
 
 
 
 if __name__ == "__main__":
     load_dotenv()
 
-    access_url = os.getenv("CONFIG_URL_ENDPOINT")+str(socket.gethostname())+"/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{str(socket.gethostname())}/"
+
     try:
         response = requests.get(access_url)
 
@@ -27,7 +32,11 @@ if __name__ == "__main__":
         smart_meters = config_json["meter_list"]
 
         for smart_meter in smart_meters:
-            publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", "payload", hostname=broker, port=port)
+            
+            print(smart_meter['id'], smart_meter['serial_number'])    
+            response_from_meter = getCurrentMeterReading(smart_meter['serial_number'])        
+
+            publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=response_from_meter, hostname=broker, port=port)
 
 
     except HTTPError as http_err:

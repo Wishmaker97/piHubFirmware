@@ -8,12 +8,6 @@
 ## About The Project
 This project was developed to provide remote access and control along with periodic reportig for Smart meters working on the `DL/T645-2007` instruction set
 
-### Built With
-
-* [flask by palletsprojects](https://flask.palletsprojects.com/en/2.0.x/)
-* [paho MQTT cleint by eclipse](https://www.eclipse.org/paho/index.php?page=clients/python/index.php)
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -34,7 +28,9 @@ This is an example of how to list things you need to use the software and how to
 2. cd to Enter to project directory
    ```sh
    cd pi-hub
+   pip3 install virtualenv
    ```
+
 3. create virtual environment 
    ```sh
    python3 -m venv venv
@@ -60,6 +56,13 @@ This is an example of how to list things you need to use the software and how to
 - [x] Add back to top links
 - [ ] Add Additional Templates w/ Examples
 - [ ] Add "components" document to easily copy & paste sections of the readme
+
+### Built With
+
+* [flask (for testing ONLY)](https://flask.palletsprojects.com/en/2.0.x/)
+* [paho MQTT client for python](https://www.eclipse.org/paho/index.php?page=clients/python/index.php)
+
+
 
 <!-- CONTACT -->
 ## Contact
