@@ -8,6 +8,7 @@ from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
 import serial
+import sys
 
 def getCurrentMeterReading(meter_serial_number):
     print(meter_serial_number)
@@ -32,11 +33,15 @@ if __name__ == "__main__":
         smart_meters = config_json["meter_list"]
 
         for smart_meter in smart_meters:
-            
-            print(smart_meter['id'], smart_meter['serial_number'])    
-            response_from_meter = getCurrentMeterReading(smart_meter['serial_number'])        
+            print(smart_meter['id'], smart_meter['serial_number']) 
+            print(sys.argv[1])
 
-            publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=response_from_meter, hostname=broker, port=port)
+            if (str(sys.argv[1]) == smart_meter['id']):           
+                   
+                response_from_meter = getCurrentMeterReading(smart_meter['serial_number'])        
+
+                publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=response_from_meter, hostname=broker, port=port)
+
 
 
     except HTTPError as http_err:
