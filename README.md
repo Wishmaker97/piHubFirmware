@@ -62,6 +62,9 @@ This is an example of how to list things you need to use the software and how to
 * [flask (for testing ONLY)](https://flask.palletsprojects.com/en/2.0.x/)
 * [paho MQTT client for python](https://www.eclipse.org/paho/index.php?page=clients/python/index.php)
 
+Special Thanks to 
+* [施广源](https://zhuanlan.zhihu.com/p/378137714)
+
 
 
 <!-- CONTACT -->

@@ -1,5 +1,3 @@
-import random
-import time
 import json
 import paho.mqtt.publish as publish
 import socket
@@ -7,58 +5,77 @@ import requests
 from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
-import serial
 import sys
+import re
+import binascii
+import serial
+import datetime
 import time
 
-def getCurrentMeterReading(meter_serial_number):
-    print(meter_serial_number)
-    return "10.7 kWh"
+class WatthourMeter:
+    def __init__(self, comPort):
+        self.comPort = comPort
+
+    def serialExchange(self, dataList):
+        with serial.Serial(self.comPort, 2400, parity=serial.PARITY_EVEN, timeout=2) as serialConn:
+            if serialConn.isOpen():
+                serialConn.write(b''.join([binascii.a2b_hex(data) for data in dataList]))
+                return {'success': True, 'data': re.findall(r'[0-9A-Z]{2}', binascii.b2a_hex(serialConn.readline()).decode().upper())}
+            else:
+                return {'success': False, 'description': '端口未打开'}
+
+    def dataListProcess(self, addressField, controlCode, dataFieldLength, dateFieldStr=''):
+        dateField = re.findall(r'[0-9A-F]{2}', dateFieldStr)
+        dateField.reverse()
+        dateField = [hex(int('0x{}'.format(data), 16) + int('0x33', 16)).replace('0x', '').upper().zfill(2)[-2:] for data in dateField]
+
+        checkList = ['68'] + addressField + ['68', controlCode, dataFieldLength] + dateField
+        checkCode = hex(sum([int('0x{}'.format(check_l), 16) for check_l in checkList])).replace('0x', '').upper().zfill(2)[-2:]
+        return ['FE'] * 4 + checkList + [checkCode, '16']
+
+    def resultListProcess(self, resultList, dataFieldLength):
+        return [hex(int('0x{}'.format(res), 16) - int('0x33', 16)).replace('0x', '').upper().zfill(2)[-2:] for res in resultList[14 + int(dataFieldLength) : -2]]
+ 
+    def getMeterNumber(self):
+        dataList = self.dataListProcess(['AA'] * 6, '13', '00')
+        result = self.serialExchange(dataList)
+        if result['success']:
+            return self.resultListProcess(result['data'], '00')
+        else:
+            return None
+
+    def getActivePower(self):
+        addressField = self.getMeterNumber()
+        if addressField:
+            dataList = self.dataListProcess(addressField, '11', '04', "00010000")
+            print(dataList)
+ 
+            result = self.serialExchange(dataList)
+            print(result)
+            if result['success']:
+                resultList = self.resultListProcess(result['data'], '04')
+                print(resultList)
+                resultList.reverse()
+                addressField.reverse()
+                meterNo = ''.join(addressField)
+                meterRecord = float(resultList[0]) * 10000 + float(resultList[1]) * 100 + float(resultList[2]) + float(resultList[3]) * 0.01
+                print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
+            else:
+                print(result['description'])
 
 
 
 if __name__ == "__main__":
     load_dotenv()
 
+   
+
     # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{str(socket.gethostname())}/"
 
-    ser = serial.Serial(
-        port='COM4',  # Replace ttyS0 with ttyAM0 for Pi1,Pi2,Pi0
-        baudrate=2400,
-        parity=serial.PARITY_ODD,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1
-    )
-
-    bytesend = b" FE FE FE FE 68 16 76 10 82 88 88 68 14 0E 33 33 35 3D 35 33 33 33 33 33 33 33 33 33 CS 16"
-    
-    # macaddress = "888882107616"
-    # macaddress_array_for_command = []
-    # mac_len = len(macaddress)
-    # mac_len_half = int(mac_len /2)
-    # print("mac_len",mac_len)
-
-    # mac_half_range = range(mac_len_half)
-    # for i in mac_half_range:
-    #     value = str(macaddress[mac_len - (i+1)*2]) + str(macaddress[mac_len - ((i+1)*2 -1)])
-    #     print("self.macaddress[mac_len - i*2]", value)
-    #     macaddress_array_for_command.append(value)
-
-    # macaddress_string_for_command = ""
-    # for val in macaddress_array_for_command:
-    #     macaddress_string_for_command = macaddress_string_for_command + val + " "
-
-    # send_bytearray = bytearray.fromhex("fe fe fe fe 68 " + macaddress_string_for_command + "68 11 04 33 33 33 33 3c 16")
-
-    # reply = ser.write(bytearray(send_bytearray))
-    # print("reply",reply)
-
-    time.sleep(0.5)
-
-    print(ser.read(30))
+    WatthourMeter(str(os.getenv('COM_PORT'))).getActivePower()
 
 
+   
     # try:
     #     response = requests.get(access_url)
 
