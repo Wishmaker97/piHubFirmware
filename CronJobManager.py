@@ -10,8 +10,8 @@ class CronJobManager:
         self.cron = CronTab(user=True)
     
     def checkIfScheduleIsDifferent(self, new_schedule_string):
-        if self.cron is Empty:
-            return True
+        if len(self.cron)==0:
+            return False
         for job in self.cron:
             if "Scheduled report" in str(job) and new_schedule_string not in str(job):
                 return True            
