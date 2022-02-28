@@ -1,11 +1,9 @@
-import json
 import paho.mqtt.publish as publish
-import socket
 import requests
 from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 import os
-import WatthourMeter
+from WatthourMeter import WatthourMeter
 from uuid import getnode as get_mac
 import sys
 
@@ -14,6 +12,7 @@ if __name__ == "__main__":
     load_dotenv()   
 
     access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
     print(access_url)
    
     try:
@@ -27,6 +26,8 @@ if __name__ == "__main__":
         pi_hub_id = config_json['pi_hub_id']
         client_id = config_json["client_id"]
         smart_meters = config_json["meter_list"]    
+
+        print(config_json)
 
         if len(sys.argv)>1:
 
