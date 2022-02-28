@@ -11,8 +11,8 @@ import sys
 if __name__ == "__main__":
     load_dotenv()   
 
-    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
-    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
     print(access_url)
    
     try:
@@ -24,8 +24,8 @@ if __name__ == "__main__":
         broker = config_json['mqtt']['broker']
         port = config_json['mqtt']['port']
         pi_hub_id = config_json['pi_hub_id']
-        client_id = config_json["client_id"]
-        smart_meters = config_json["meter_list"]    
+        client_id = config_json['client_id']
+        smart_meters = config_json['meter_list']    
 
         print(config_json)
 
