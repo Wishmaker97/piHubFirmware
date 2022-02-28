@@ -11,7 +11,7 @@ class CronJobManager:
     
     def checkIfScheduleIsDifferent(self, new_schedule_string):
         if len(self.cron)==0:
-            return False
+            return True
         for job in self.cron:
             if "Scheduled report" in str(job) and new_schedule_string not in str(job):
                 return True            
