@@ -11,7 +11,8 @@ from CronJobManager import CronJobManager
 if __name__ == "__main__":
     load_dotenv() 
 
-    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
 
     print(access_url)
 
@@ -21,7 +22,7 @@ if __name__ == "__main__":
 
         api_update_scheduler_string = config_json['update_scheduler_cronjob']
         
-        job_worker = CronJobManager(os.getenv('CRON_JOB_PATH'))
+        job_worker = CronJobManager()
 
         if job_worker.checkIfScheduleIsDifferent(api_update_scheduler_string):            
             print("removing existing jobs")

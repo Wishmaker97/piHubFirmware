@@ -6,8 +6,8 @@ import os
 
 
 class CronJobManager:
-    def __init__(self, tab_file_path):
-        self.cron = CronTab(tabfile=tab_file_path)
+    def __init__(self):
+        self.cron = CronTab(user=True)
     
     def checkIfScheduleIsDifferent(self, new_schedule_string):
         if self.cron is Empty:
