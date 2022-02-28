@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
         api_update_scheduler_string = config_json['update_scheduler_cronjob']
         
-        job_worker = CronJobManager("cronjob.tab")
+        job_worker = CronJobManager(os.getenv('CRON_JOB_PATH'))
 
         if job_worker.checkIfScheduleIsDifferent(api_update_scheduler_string):            
             print("removing existing jobs")
