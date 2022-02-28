@@ -1,3 +1,5 @@
 # Environments
 .env
 .venv
+# other files
+cronjob.tab
