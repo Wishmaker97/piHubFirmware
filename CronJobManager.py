@@ -25,5 +25,5 @@ class CronJobManager:
     
     def addNewJob(self, new_schedule_string):
         load_dotenv()
-        self.cron.new(command=F"python .\{os.getenv('SERVICE_WORKER_SCRIPT')}", comment=F"Scheduled report {datetime.datetime.now()}").setall(new_schedule_string)
+        self.cron.new(command=F"bash /usr/local/sbin/service_worker.sh", comment=F"Scheduled report {datetime.datetime.now()}").setall(new_schedule_string)
         self.cron.write()
