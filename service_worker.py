@@ -6,6 +6,7 @@ import os
 from WatthourMeter import WatthourMeter
 from uuid import getnode as get_mac
 import sys
+import datetime
 
 
 if __name__ == "__main__":
@@ -38,10 +39,10 @@ if __name__ == "__main__":
             meter_usage = meter_instance.getActivePower(smart_meter_address)
 
             if (meter_usage is not None):
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"{meter_usage} kWh", hostname=broker, port=port)
+                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
             
             else:
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"COULD NOT RETRIEVE DATA", hostname=broker, port=port)
+                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
 
         else:
             for smart_meter in smart_meters:
@@ -54,13 +55,13 @@ if __name__ == "__main__":
                     publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"{meter_usage} kWh", hostname=broker, port=port)
                 
                 else:
-                    publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"COULD NOT RETRIEVE DATA", hostname=broker, port=port)
+                    publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
 
     except HTTPError as http_err:
         print(f'HTTP error occurred: {http_err}')
-        publish.single(f"{client_id}/{pi_hub_id}", payload="HTTP ERROR WHEN RETRIEVING DATA", hostname=broker, port=port)
+        publish.single(f"{client_id}/{pi_hub_id}", payload=f"HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.now()}", hostname=broker, port=port)
 
     except Exception as err:
         print(f'Other error occurred: {err}')
-        publish.single(f"{client_id}/{pi_hub_id}", payload="NON-HTTP ERROR WHEN RETRIEVING DATA", hostname=broker, port=port)
+        publish.single(f"{client_id}/{pi_hub_id}", payload=f"NON-HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.now()}", hostname=broker, port=port)
         
