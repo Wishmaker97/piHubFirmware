@@ -52,10 +52,9 @@ This is an example of how to list things you need to use the software and how to
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
+- [x] sending data to MQTT topic based on cronjob linux
+- [x] on demand MQTT
+
 
 ### Built With
 
