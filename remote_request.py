@@ -42,21 +42,21 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
             smart_meter_address = [smart_meter_address_str[i:i + 2] for i in range(0, len(smart_meter_address_str), 2)][::-1]
             meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
             meter_usage = meter_instance.getActivePower(smart_meter_address)
-            print(meter_usage)
+            # print(meter_usage)
 
             if (meter_usage is not None):
-                publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"{meter_usage} kWh @{datetime.datetime.utcnow()}", hostname=broker, port=port)
+                publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"{meter_usage} kWh @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
             
             else:
-                publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"COULD NOT RETRIVE DATA FROM METER @{datetime.datetime.utcnow()}", hostname=broker, port=port)
+                publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"COULD NOT RETRIVE DATA FROM METER @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
 
         except Exception as err:
             print(f'Other error occurred: {err}')
-            publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
+            # publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
             
     else:
         print(f'Could not find Smart Meter')
-        publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"COULD NOT FIND SMART METER ADDRESS IN CONFIGURATION @{datetime.datetime.utcnow()}", hostname=broker, port=port)
+        publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"COULD NOT FIND SMART METER ADDRESS IN CONFIGURATION @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
 
 
 
