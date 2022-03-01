@@ -26,7 +26,7 @@ class WatthourMeter:
         checkList = ['68'] + addressField + ['68', controlCode, dataFieldLength] + dateField
         checkCode = hex(sum([int('0x{}'.format(check_l), 16) for check_l in checkList])).replace('0x', '').upper().zfill(2)[-2:]
 
-        print(['FE'] * 4 + checkList + [checkCode, '16'])
+        # print(['FE'] * 4 + checkList + [checkCode, '16'])
         return ['FE'] * 4 + checkList + [checkCode, '16']
 
     def resultListProcess(self, resultList, dataFieldLength):
@@ -52,8 +52,8 @@ class WatthourMeter:
                 addressField.reverse()
                 meterNo = ''.join(addressField)
                 meterRecord = float(resultList[0]) * 10000 + float(resultList[1]) * 100 + float(resultList[2]) + float(resultList[3]) * 0.01
-                print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
+                # print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
                 return meterRecord
             else:
-                print(result['description'])
+                # print(result['description'])
                 return None

@@ -12,8 +12,8 @@ import datetime
 if __name__ == "__main__":
     load_dotenv()   
 
-    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
-    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
     print(access_url)
    
     try:
@@ -30,38 +30,23 @@ if __name__ == "__main__":
 
         print(config_json)
 
-        if len(sys.argv)>1:
+        for smart_meter in smart_meters:
 
-            smart_meter = sys.argv[1]
-
-            smart_meter_address = [smart_meter[i:i + 2] for i in range(0, len(smart_meter), 2)][::-1]
+            smart_meter_address = [smart_meter['serial_number'][i:i + 2] for i in range(0, len(smart_meter['serial_number']), 2)][::-1]
             meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
             meter_usage = meter_instance.getActivePower(smart_meter_address)
-
+            
             if (meter_usage is not None):
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=F"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
+                publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=F"{meter_usage} kWh @{datetime.datetime.utcnow()}", hostname=broker, port=port)
             
             else:
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=F"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
-
-        else:
-            for smart_meter in smart_meters:
-
-                smart_meter_address = [smart_meter['serial_number'][i:i + 2] for i in range(0, len(smart_meter['serial_number']), 2)][::-1]
-                meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-                meter_usage = meter_instance.getActivePower(smart_meter_address)
-                
-                if (meter_usage is not None):
-                    publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=F"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
-                
-                else:
-                    publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
+                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
 
     except HTTPError as http_err:
         print(f'HTTP error occurred: {http_err}')
-        publish.single(f"{client_id}/{pi_hub_id}", payload=f"HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.now()}", hostname=broker, port=port)
+        publish.single(f"{client_id}/{pi_hub_id}", payload=f"HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
 
     except Exception as err:
         print(f'Other error occurred: {err}')
-        publish.single(f"{client_id}/{pi_hub_id}", payload=f"NON-HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.now()}", hostname=broker, port=port)
+        publish.single(f"{client_id}/{pi_hub_id}", payload=f"NON-HTTP ERROR WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
         

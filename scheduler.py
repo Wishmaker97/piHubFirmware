@@ -11,8 +11,8 @@ from CronJobManager import CronJobManager
 if __name__ == "__main__":
     load_dotenv() 
 
-    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
-    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
 
     print(access_url)
 
