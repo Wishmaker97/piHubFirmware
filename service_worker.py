@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
     # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
-    print(access_url)
+    # print(access_url)
    
     try:
         ## make api call to obtain the MQTT broker details and topic for publishing and also the smart meter list 
@@ -28,11 +28,14 @@ if __name__ == "__main__":
         client_id = config_json['client_id']
         smart_meters = config_json['meter_list']    
 
-        print(config_json)
+        # print(config_json)
 
         for smart_meter in smart_meters:
 
+            print(smart_meter)
+
             smart_meter_address = [smart_meter['serial_number'][i:i + 2] for i in range(0, len(smart_meter['serial_number']), 2)][::-1]
+            print(smart_meter_address)
             meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
             print(meter_instance)
             meter_usage = meter_instance.getActivePower(smart_meter_address)
