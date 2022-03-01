@@ -46,6 +46,7 @@ class WatthourMeter:
             # print(F"addressField: {addressField}\t controlcode: 11\t datafieldlength: 04\t datafieldString: 00010000")
             dataList = self.dataListProcess(addressField, '11', '04', "00010000") 
             result = self.serialExchange(dataList)
+            print(result)
             if result['success']:
                 resultList = self.resultListProcess(result['data'], '04')
                 resultList.reverse()
