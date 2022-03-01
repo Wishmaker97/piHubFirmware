@@ -27,17 +27,19 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
     pi_hub_id = config_json['pi_hub_id']
     client_id = config_json['client_id']
     found_address = False
+    smart_meter_address_str = None
     for smart_meter in config_json['meter_list']:
         print(smart_meter)
-        if str(smart_meter['id']) == msg.payload.decode("utf-8") :
+        if str(smart_meter['id']) == msg.payload.decode("utf-8"):
             found_address = True
-            smart_meter = smart_meter['serial_number']
+            smart_meter_address_str = smart_meter['serial_number']
     
-    if (found_address):
+    if(found_address):
         try:
-            smart_meter_address = [smart_meter[i:i + 2] for i in range(0, len(smart_meter), 2)][::-1]
+            smart_meter_address = [smart_meter_address_str[i:i + 2] for i in range(0, len(smart_meter_address_str), 2)][::-1]
             meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
             meter_usage = meter_instance.getActivePower(smart_meter_address)
+            print(meter_usage)
 
             if (meter_usage is not None):
                 publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"{meter_usage} kWh @{datetime.datetime.utcnow()}", hostname=broker, port=port)
@@ -48,7 +50,7 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
         except Exception as err:
             print(f'Other error occurred: {err}')
             publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
-    
+            
     else:
         print(f'Could not find Smart Meter')
         publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"COULD NOT FIND SMART METER ADDRESS IN CONFIGURATION @{datetime.datetime.utcnow()}", hostname=broker, port=port)
