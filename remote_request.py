@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
             config_json = response.json()
 
-            print(config_json)
+            # print(config_json)
 
         except HTTPError as http_err:
             config_json = None
@@ -86,27 +86,25 @@ if __name__ == "__main__":
             config_json = None
             print(f'Other error occurred: {err}')
 
-        else:
+        if (config_json is not None):
 
-            if (config_json is not None):
+            broker = config_json['mqtt']['broker']
+            port = config_json['mqtt']['port']
+            pi_hub_id = config_json['pi_hub_id']
+            client_id = config_json['client_id']
+            TOPIC = F"COMMAND/{client_id}/{pi_hub_id}"
 
-                broker = config_json['mqtt']['broker']
-                port = config_json['mqtt']['port']
-                pi_hub_id = config_json['pi_hub_id']
-                client_id = config_json['client_id']
-                TOPIC = F"COMMAND/{client_id}/{pi_hub_id}"
+            try:
+                client = mqtt.Client(F"remote-request-handler-{get_mac()}/")
+                # client = mqtt.Client(F"remote-request-handler-{202481587158093}/") 
+                client.on_connect = on_connect
+                client.on_message = on_message
 
-                try:
-                    client = mqtt.Client(F"remote-request-handler-{get_mac()}/")
-                    # client = mqtt.Client(F"remote-request-handler-{202481587158093}/") 
-                    client.on_connect = on_connect
-                    client.on_message = on_message
+                client.connect(broker, port)
+                client.loop_forever()
 
-                    client.connect(broker, port)
-                    client.loop_forever()
-
-                except Exception as err:
-                    print(f'Error occurred: {err}')
+            except Exception as err:
+                print(f'Error occurred: {err}')
         
 
                 
