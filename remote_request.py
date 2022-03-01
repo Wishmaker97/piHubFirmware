@@ -103,7 +103,7 @@ if __name__ == "__main__":
                     client.on_message = on_message
 
                     client.connect(broker, port)
-                    # client.loop_forever()
+                    client.loop_forever()
 
                 except Exception as err:
                     print(f'Error occurred: {err}')
