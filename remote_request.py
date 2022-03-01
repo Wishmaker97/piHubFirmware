@@ -52,7 +52,7 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
 
         except Exception as err:
             print(f'Other error occurred: {err}')
-            # publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
+            publish.single(f"RESPONSE/{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA (line55) @{datetime.datetime.utcnow()}", hostname=broker, port=port, qos=2, retain=False)
             
     else:
         print(f'Could not find Smart Meter')
@@ -103,7 +103,7 @@ if __name__ == "__main__":
                     client.on_message = on_message
 
                     client.connect(broker, port)
-                    client.loop_forever()
+                    # client.loop_forever()
 
                 except Exception as err:
                     print(f'Error occurred: {err}')
