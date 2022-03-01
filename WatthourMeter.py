@@ -55,5 +55,5 @@ class WatthourMeter:
                 print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
                 return meterRecord
             else:
-                # print(result['description'])
+                print(result['description'])
                 return None
