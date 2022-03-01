@@ -17,12 +17,12 @@ def on_connect(client, userdata, flags, rc):  # The callback for when the client
     
     print("Connected with result code {0}".format(str(rc)))
     print(F"Listening to topic : {TOPIC}")
-    client.subscribe(TOPIC)
+    client.subscribe(TOPIC, qos=2)
 
 
 def on_message(client, userdata, msg):  # The callback for when a PUBLISH message is received from the server.
 
-    print("Message received-> " + msg.topic + " " + str(msg.payload))  # Print a received msg
+    print(F"\nMessage received-> {msg.topic} {msg.payload.decode('utf-8')}")  # Print a received msg
     # print(config_json['meter_list'])
     pi_hub_id = config_json['pi_hub_id']
     client_id = config_json['client_id']
