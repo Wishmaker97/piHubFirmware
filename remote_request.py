@@ -26,13 +26,16 @@ def on_message(client, userdata, msg):  # The callback for when a PUBLISH messag
     # print(config_json['meter_list'])
     pi_hub_id = config_json['pi_hub_id']
     client_id = config_json['client_id']
+    broker = config_json['mqtt']['broker']
+    port = config_json['mqtt']['port']
     found_address = False
     smart_meter_address_str = None
     for smart_meter in config_json['meter_list']:
-        print(smart_meter)
+        # print(smart_meter)
         if str(smart_meter['id']) == msg.payload.decode("utf-8"):
             found_address = True
             smart_meter_address_str = smart_meter['serial_number']
+            print(F"Address fround : {smart_meter_address_str}")
     
     if(found_address):
         try:
