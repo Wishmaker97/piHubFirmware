@@ -3,3 +3,6 @@
 .venv
 # other files
 cronjob.tab
+
+#remove pycache
+__pycache__

@@ -39,10 +39,10 @@ if __name__ == "__main__":
             meter_usage = meter_instance.getActivePower(smart_meter_address)
 
             if (meter_usage is not None):
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
+                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=F"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
             
             else:
-                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
+                publish.single(f"{client_id}/{pi_hub_id}/{smart_meter}", payload=F"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
 
         else:
             for smart_meter in smart_meters:
@@ -52,7 +52,7 @@ if __name__ == "__main__":
                 meter_usage = meter_instance.getActivePower(smart_meter_address)
                 
                 if (meter_usage is not None):
-                    publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"{meter_usage} kWh", hostname=broker, port=port)
+                    publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=F"{meter_usage} kWh @{datetime.datetime.now()}", hostname=broker, port=port)
                 
                 else:
                     publish.single(f"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=f"COULD NOT RETRIEVE DATA @{datetime.datetime.now()}", hostname=broker, port=port)
