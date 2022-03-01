@@ -34,7 +34,9 @@ if __name__ == "__main__":
 
             smart_meter_address = [smart_meter['serial_number'][i:i + 2] for i in range(0, len(smart_meter['serial_number']), 2)][::-1]
             meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
+            print(meter_instance)
             meter_usage = meter_instance.getActivePower(smart_meter_address)
+            print(meter_instance)
             
             if (meter_usage is not None):
                 publish.single(F"{client_id}/{pi_hub_id}/{smart_meter['id']}", payload=F"{meter_usage} kWh @{datetime.datetime.utcnow()}", hostname=broker, port=port)

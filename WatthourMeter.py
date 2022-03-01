@@ -43,7 +43,7 @@ class WatthourMeter:
     def getActivePower(self, addressField):
         # addressField = self.getMeterNumber()
         if addressField:
-            print(F"addressField: {addressField}\t controlcode: 11\t datafieldlength: 04\t datafieldString: 00010000")
+            # print(F"addressField: {addressField}\t controlcode: 11\t datafieldlength: 04\t datafieldString: 00010000")
             dataList = self.dataListProcess(addressField, '11', '04', "00010000") 
             result = self.serialExchange(dataList)
             if result['success']:
@@ -52,7 +52,7 @@ class WatthourMeter:
                 addressField.reverse()
                 meterNo = ''.join(addressField)
                 meterRecord = float(resultList[0]) * 10000 + float(resultList[1]) * 100 + float(resultList[2]) + float(resultList[3]) * 0.01
-                # print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
+                print('[{0}][{1}] usage: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
                 return meterRecord
             else:
                 # print(result['description'])

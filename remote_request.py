@@ -64,14 +64,14 @@ if __name__ == "__main__":
             access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
             # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
 
-            # print(access_url)
+            print(access_url)
         
             ## make api call to obtain the MQTT broker details and topic for publishing and also the smart meter list 
             response = requests.get(access_url)
 
             config_json = response.json()
 
-            # print(config_json)
+            print(config_json)
 
         except HTTPError as http_err:
             config_json = None
