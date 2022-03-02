@@ -53,5 +53,5 @@ if __name__ == "__main__":
 
     except Exception as err:
         print(f'Other error occurred: {err}')
-        publish.single(f"{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA (line56-service_worker) @{datetime.datetime.utcnow()}", hostname=broker, port=port)
+        publish.single(f"{client_id}/{pi_hub_id}", payload=F"ERROR - {err} - WHEN RETRIEVING DATA @{datetime.datetime.utcnow()}", hostname=broker, port=port)
         
