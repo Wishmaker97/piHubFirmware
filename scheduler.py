@@ -54,11 +54,11 @@ if __name__ == "__main__":
         try:
             git_repo = git.Repo(search_parent_directories=True)
             current_sha = git_repo.head.object.hexsha
-            
+
             if(str(current_sha)!=str(firmware_version)):
                 print("hash is same as current")
             else:
-                os.system(F"~/server/pi-hub && git pull origin main {firmware_version}")
+                os.system(F"cd ~/server/pi-hub && git pull origin main {firmware_version}")
 
         except Exception as err:
             logging.exception(msg=F"error occurred during git operation: {err} @{datetime.datetime.utcnow()} (UTC)")
