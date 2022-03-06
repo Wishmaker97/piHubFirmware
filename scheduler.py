@@ -8,7 +8,8 @@ import logging.handlers as handlers
 import logging
 import datetime
 import git
-
+import subprocess
+import sys
 
 
 if __name__ == "__main__":
@@ -35,6 +36,7 @@ if __name__ == "__main__":
         config_json = response.json()
 
         api_update_scheduler_string = config_json['update_scheduler_cronjob']
+        firmware_version = config_json['firmware_version']
         
         ## initialize CronJob instance to handle update of cronjobs
         job_worker = CronJobManager()
@@ -49,16 +51,20 @@ if __name__ == "__main__":
         else:
             logging.info(msg=F"No need to update Cronjob (no changes) @ {datetime.datetime.utcnow()} (UTC)")
 
-        try:            
-            repo = git.Repo(search_parent_directories=True)
-            sha = repo.head.object.hexsha
-            print(sha)
+        try:
+            git_repo = git.Repo(search_parent_directories=True)
+            current_sha = git_repo.head.object.hexsha
+            
+            if(str(current_sha)!=str(firmware_version)):
+                print("hash is same as current")
+            else:
+                os.system(F"~/server/pi-hub && git pull origin main {firmware_version}")
 
         except Exception as err:
-            logging.exception(msg=F"Other error occurred: {err} @{datetime.datetime.utcnow()}")
+            logging.exception(msg=F"error occurred during git operation: {err} @{datetime.datetime.utcnow()} (UTC)")
 
     except HTTPError as http_err:
-        logging.exception(msg=F"HTTP error occurred: {http_err} @{datetime.datetime.utcnow()}")
+        logging.exception(msg=F"HTTP error occurred: {http_err} @{datetime.datetime.utcnow()} (UTC)")
 
     except Exception as err:
-        logging.exception(msg=F"Other error occurred: {err} @{datetime.datetime.utcnow()}")
+        logging.exception(msg=F"Other error occurred: {err} @{datetime.datetime.utcnow()} (UTC)")
