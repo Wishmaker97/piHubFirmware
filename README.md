@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <div id="top"></div>
 
 <!-- PROJECT LOGO -->
@@ -79,3 +80,10 @@ Special Thanks to
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/vishmika-fernando-435923116/
 
+=======
+username: piHub01
+password: admin123
+
+hostname: pihub01
+SSH: password no certificates
+>>>>>>> Stashed changes
