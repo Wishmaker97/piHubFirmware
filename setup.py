@@ -99,6 +99,7 @@ if __name__ == "__main__":
 
         [Service]
         Restart=always
+        ExecStartPre=/bin/sleep 10
         ExecStart=/usr/local/sbin/remote_request.sh
         PIDFile=/var/run/remote_request.pid
 

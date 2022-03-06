@@ -7,6 +7,7 @@ from CronJobManager import CronJobManager
 import logging.handlers as handlers
 import logging
 import datetime
+import git
 
 
 
@@ -47,6 +48,14 @@ if __name__ == "__main__":
         
         else:
             logging.info(msg=F"No need to update Cronjob (no changes) @ {datetime.datetime.utcnow()} (UTC)")
+
+        try:            
+            repo = git.Repo(search_parent_directories=True)
+            sha = repo.head.object.hexsha
+            print(sha)
+
+        except Exception as err:
+            logging.exception(msg=F"Other error occurred: {err} @{datetime.datetime.utcnow()}")
 
     except HTTPError as http_err:
         logging.exception(msg=F"HTTP error occurred: {http_err} @{datetime.datetime.utcnow()}")
