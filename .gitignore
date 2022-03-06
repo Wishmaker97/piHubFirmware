@@ -6,3 +6,6 @@ cronjob.tab
 
 #remove pycache
 __pycache__
+
+#logfiles
+*.log
