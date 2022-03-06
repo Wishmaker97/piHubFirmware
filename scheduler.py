@@ -25,8 +25,8 @@ if __name__ == "__main__":
 
     load_dotenv() 
 
-    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
-    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
+    # access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}{get_mac()}/"
+    access_url = F"{os.getenv('CONFIG_URL_ENDPOINT')}202481587158093/"
 
     try:        
         ## make api call to obtain the MQTT broker details and topic for publishing and also the smart meter list 
@@ -54,8 +54,9 @@ if __name__ == "__main__":
         try:
             git_repo = git.Repo(search_parent_directories=True)
             current_sha = git_repo.head.object.hexsha
+            print(current_sha)
 
-            if(str(current_sha)!=str(firmware_version)):
+            if(str(current_sha)==str(firmware_version)):
                 print("hash is same as current")
             else:
                 os.system(F"cd ~/server/pi-hub && git pull origin main {firmware_version}")
