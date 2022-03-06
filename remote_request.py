@@ -19,7 +19,7 @@ config_json = None
 if __name__ == "__main__":
 
     formatter = logging.Formatter('%(asctime)s program_name [%(process)d]: %(message)s', '%b %d %H:%M:%S')    
-    log_handler = handlers.TimedRotatingFileHandler(r"logfiles\remote_request\logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
+    log_handler = handlers.TimedRotatingFileHandler(r"logfiles/remote_request/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
     log_handler.setFormatter(formatter)
     logger = logging.getLogger()
     logger.addHandler(log_handler)

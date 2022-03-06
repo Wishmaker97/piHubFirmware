@@ -12,6 +12,23 @@ if __name__ == "__main__":
 
     print("Initialization Script started ...")
 
+    
+    # STEP ZERO - setup directories
+
+    print("[STEP 0] - SETUP Logfile directories")
+    print("\t'-->[0.1] - SETUP logfiles")
+    os.system("mkdir logfiles")
+
+    print("\t'-->[0.2] - SETUP logfiles")
+    os.system("mkdir logfiles/remote_requests")
+
+    print("\t'-->[0.3] - SETUP logfiles")
+    os.system("mkdir logfiles/service_worker")
+
+    print("\t'-->[0.4] - SETUP logfiles")
+    os.system("mkdir logfiles/scheduler")
+
+
     # STEP ONE - VIRTUAL ENVIRONMENT !!
 
     print("[STEP 1] - SETUP VIRTUAL ENVIRONMENT FOR PYTHON")
