@@ -8,8 +8,6 @@ import logging.handlers as handlers
 import logging
 import datetime
 import git
-import subprocess
-import sys
 
 
 if __name__ == "__main__":
@@ -63,6 +61,16 @@ if __name__ == "__main__":
 
         except Exception as err:
             logging.exception(msg=F"error occurred during git operation: {err} @{datetime.datetime.utcnow()} (UTC)")
+        
+        # try:
+
+        #     if(str(current_sha)==str(firmware_version)):
+        #         print("hash is same as current")
+        #     else:
+        #         os.system(F"cd ~/server/pi-hub && git pull origin main {firmware_version}")
+
+        # except Exception as err:
+        #     logging.exception(msg=F"error occurred during ntp update : {err} @{datetime.datetime.utcnow()} (UTC)")
 
     except HTTPError as http_err:
         logging.exception(msg=F"HTTP error occurred: {http_err} @{datetime.datetime.utcnow()} (UTC)")
