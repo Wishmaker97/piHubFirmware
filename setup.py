@@ -34,7 +34,7 @@ if __name__ == "__main__":
     print("[STEP 1] - SETUP VIRTUAL ENVIRONMENT FOR PYTHON")
 
     print("\t'-->[1.1] - Install Virtual Environment")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "virtualenv"])
+    os.system("sudo apt-get install python3-venv")
 
     print("\t'-->[1.2] - Create Virtual Environment")
     subprocess.check_call([sys.executable, "-m", "venv", "venv"])
