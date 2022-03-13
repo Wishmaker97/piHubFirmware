@@ -74,12 +74,13 @@ if __name__ == "__main__":
         ## update ntp server
         try:
             is_server_different = True
+            lines = []
             with open("/etc/ntp.conf", "r") as f:
                 lines = f.readlines()
                 # logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {lines}")
-                for line in lines:
+                for num,line in enumerate(lines):
                     if F"server {ntp_server}" in line :
-                        logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {line}")
+                        logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) and found line ---> {line} @line_number{num}")
                         is_server_different = False
 
             if(is_server_different):
