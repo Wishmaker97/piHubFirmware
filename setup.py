@@ -2,12 +2,16 @@ import subprocess
 import sys
 import os
 import time
-import textwrap
+import datetime
 
+import os
 subprocess.check_call([sys.executable, '-m', 'pip', 'install','python-crontab'])
 
-import datetime
 from crontab import CronTab
+
+subprocess.check_call([sys.executable, '-m', 'pip', 'install','virtualenv'])
+
+import virtualenv
 
 if __name__ == "__main__":
 
@@ -38,7 +42,8 @@ if __name__ == "__main__":
     os.system("sudo apt-get install python3-venv")
 
     print("\t'-->[1.2] - Create Virtual Environment")
-    subprocess.check_call([sys.executable, "-m", "venv", "venv"])
+    venv_dir = os.path.join(os.path.expanduser("~"), "venv")
+    virtualenv.create_environment(venv_dir)
 
     print("\t'-->[1.3] - ACTIVATE Virtual Environment")
     os.system("source /venv/bin/activate")
@@ -60,50 +65,54 @@ if __name__ == "__main__":
 
     print("\t'-->[2.1] - create remote_request.sh script")
     with open ('/usr/local/sbin/remote_request.sh', 'w') as rsh:
-        rsh.write(textwrap.dedent('''
-            #!/bin/bash
-            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
-            cd /home/pihub/server/piHubFirmware/
-            python remote_request.py
-        '''))
+        data = [
+            '#!/bin/bash\n',
+            'source "/home/pihub/server/piHubFirmware/venv/bin/activate"\n',
+            'cd /home/pihub/server/piHubFirmware/\n',
+            'python remote_request.py'
+        ]
+        rsh.writelines(data)
     
     print("\t'-->[2.2] - create scheduler.sh script")
     with open ('/usr/local/sbin/scheduler.sh', 'w') as rsh:
-        rsh.write(textwrap.dedent('''
-            #!/bin/bash
-            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
-            cd /home/pihub/server/piHubFirmware/
-            python scheduler.py
-        '''))
+        data = [
+            '#!/bin/bash\n',
+            'source "/home/pihub/server/piHubFirmware/venv/bin/activate"\n',
+            'cd /home/pihub/server/piHubFirmware/\n',
+            'python scheduler.py'
+        ]
+        rsh.writelines(data)
 
     print("\t'-->[2.3] - create service_worker.sh script")
     with open ('/usr/local/sbin/service_worker.sh', 'w') as rsh:
-        rsh.write(textwrap.dedent('''\
-            #!/bin/bash
-            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
-            cd /home/pihub/server/piHubFirmware/
-            python service_worker.py
-        '''))
+        data = [
+            '#!/bin/bash\n',
+            'source "/home/pihub/server/piHubFirmware/venv/bin/activate"\n',
+            'cd /home/pihub/server/piHubFirmware/\n',
+            'python service_worker.py'
+        ]
+        rsh.writelines(data)
 
     print("\t'-->[2.4] - check for all Shell scripts")
     list_files = subprocess.run(["ls", "/usr/local/sbin"])
     print("The exit code was: %d" % list_files.returncode)
 
-    print("\t'-->[2.5] - create systemd service file remote_request.service")    
-    with open ('/etc/systemd/system/remote_request.service', 'w') as rsh:
-        rsh.write(textwrap.dedent('''
-            [Unit]
-            Description=MQTT Remote access Server
-
-            [Service]
-            Restart=always
-            ExecStartPre=/bin/sleep 10
-            ExecStart=/usr/local/sbin/remote_request.sh
-            PIDFile=/var/run/remote_request.pid
-
-            [Install]
-            WantedBy=multi-user.target
-        '''))
+    print("\t'-->[2.5] - create systemd service file remote_request.service") 
+    with open ('/etc/systemd/system/remote_request.service', 'w') as rsh:   
+        data = [
+            '[Unit]\n',
+            'Description=MQTT Remote access Server\n',
+            '\n',
+            '[Service]\n',
+            'Restart=always\n',
+            'ExecStartPre=/bin/sleep 10\n',
+            'ExecStart=/usr/local/sbin/remote_request.sh\n',
+            'PIDFile=/var/run/remote_request.pid\n',
+            '\n',
+            '[Install]\n',
+            'WantedBy=multi-user.target'
+        ]
+        rsh.writelines(data)
     
     print("\t'-->[2.6] - check for all service scripts")
     list_files = subprocess.run(["ls", "/etc/systemd/system"])
@@ -111,37 +120,42 @@ if __name__ == "__main__":
 
     time.sleep(5)
 
-    print("[STEP 2] - Shell Scripts")
+    print("[STEP 3] - Shell Scripts")
     list_files = subprocess.run(["ls", "-la", "/usr/local/sbin"])
     print("The exit code was: %d" % list_files.returncode)
 
     # STEP THREE - ADDING PERMISSIONS !!
     print("\t'-->[3.1] - make scheduler.sh executable")
-    os.system("chmod u+x /usr/local/sbin/scheduler.sh")
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','/usr/local/sbin/scheduler.sh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
 
     print("\t'-->[3.2] - make remote_request.sh executable")
-    os.system("chmod u+x /usr/local/sbin/remote_request.sh")
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','/usr/local/sbin/remote_request.sh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
 
     print("\t'-->[3.3] - make service_worker.sh executable")
-    os.system("chmod u+x /usr/local/sbin/service_worker.sh")
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','/usr/local/sbin/service_worker.sh'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
+
 
     print("\t'-->[3.4] - check if .sh files are executable")
     list_files = subprocess.run(["ls", "-la", "/usr/local/sbin"])
     print("The exit code was: %d" % list_files.returncode)
 
     print("\t'-->[3.5] - make .py executable")
-    os.system("chmod u+x remote_request.py")
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','remote_request.py'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','scheduler.py'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
+    subprocess.Popen(['sudo', '-S', 'chmod', '+rwx','service_worker.py'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
+
 
     print("\t'-->[3.6] - start linux service for remote_request.py")
-    os.system("systemctl start remote_request.service")
+    subprocess.Popen(['sudo', '-S', 'systemctl', 'start','remote_request.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
+
 
     print("\t'-->[3.7] - automate start on reboot linux service for remote_request.py")
-    os.system("systemctl enable remote_request.service")
+    subprocess.Popen(['sudo', '-S', 'systemctl', 'enable','remote_request.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}')
     
 
-    # cron=CronTab(user=True)
-    # cron.new(command=F"bash /usr/local/sbin/scheduler.sh", comment=F"CRON JOB ADDED @{datetime.datetime.utcnow()} (UTC)").setall("* * * * *")
-    # cron.write()
+    cron=CronTab(user=True)
+    cron.new(command=F"bash /usr/local/sbin/scheduler.sh", comment=F"CRON JOB ADDED @{datetime.datetime.utcnow()} (UTC)").setall("* * * * *")
+    cron.write()
     
 
 
