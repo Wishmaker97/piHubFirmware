@@ -74,7 +74,7 @@ if __name__ == "__main__":
         ## update ntp server
         try:
             is_server_different = False
-            with open("/etc/ntp.conf", "rw+") as f:
+            with open("/etc/ntp.conf", "r") as f:
                 lines = f.readlines()
                 logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {lines}")
                 if F"server {ntp_server}" not in lines :
