@@ -61,8 +61,8 @@ if __name__ == "__main__":
             if(str(current_sha)==str(firmware_version)):
                 print("hash is same as current")
             else:
-                os.system(F"cd /home/pihub/server/piHubFirmware && git fetch origin main")
-                os.system(F"cd /home/pihub/server/piHubFirmware && git merge {firmware_version}")
+                os.system(F"cd /home/pihub/server/piHubFirmware && git pull origin main")
+                os.system(F"cd /home/pihub/server/piHubFirmware && git reset --hard {firmware_version}")
                 daemon_reload = subprocess.Popen(['sudo', '-S', 'systemctl', 'daemon-reload'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
                 print(daemon_reload)
                 remote_request = subprocess.Popen(['sudo', '-S', 'systemctl', 'restart','remote_request.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
