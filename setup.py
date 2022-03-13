@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 import time
+import textwrap
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install','python-crontab'])
 
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     os.system("mkdir logfiles")
 
     print("\t'-->[0.2] - SETUP logfiles")
-    os.system("mkdir logfiles/remote_requests")
+    os.system("mkdir logfiles/remote_request")
 
     print("\t'-->[0.3] - SETUP logfiles")
     os.system("mkdir logfiles/service_worker")
@@ -59,33 +60,30 @@ if __name__ == "__main__":
 
     print("\t'-->[2.1] - create remote_request.sh script")
     with open ('/usr/local/sbin/remote_request.sh', 'w') as rsh:
-        rsh.write('''\
-        #!/bin/bash
-        userName=$SUDO_USER
-        source "/home/$userName/server/pi-hub/venv/bin/activate"
-        cd /home/$userName/server/pi-hub/
-        python remote_request.py
-        ''')
+        rsh.write(textwrap.dedent('''
+            #!/bin/bash
+            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
+            cd /home/pihub/server/piHubFirmware/
+            python remote_request.py
+        '''))
     
     print("\t'-->[2.2] - create scheduler.sh script")
     with open ('/usr/local/sbin/scheduler.sh', 'w') as rsh:
-        rsh.write('''\
-        #!/bin/bash
-        userName=$SUDO_USER
-        source "/home/$userName/server/pi-hub/venv/bin/activate"
-        cd /home/$userName/server/pi-hub/
-        python scheduler.py
-        ''')
+        rsh.write(textwrap.dedent('''
+            #!/bin/bash
+            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
+            cd /home/pihub/server/piHubFirmware/
+            python scheduler.py
+        '''))
 
     print("\t'-->[2.3] - create service_worker.sh script")
     with open ('/usr/local/sbin/service_worker.sh', 'w') as rsh:
-        rsh.write('''\
-        #!/bin/bash
-        userName=$SUDO_USER
-        source "/home/$userName/server/pi-hub/venv/bin/activate"
-        cd /home/$userName/server/pi-hub/
-        python service_worker.py
-        ''')
+        rsh.write(textwrap.dedent('''\
+            #!/bin/bash
+            source "/home/pihub/server/piHubFirmware/venv/bin/activate"
+            cd /home/pihub/server/piHubFirmware/
+            python service_worker.py
+        '''))
 
     print("\t'-->[2.4] - check for all Shell scripts")
     list_files = subprocess.run(["ls", "/usr/local/sbin"])
@@ -93,19 +91,19 @@ if __name__ == "__main__":
 
     print("\t'-->[2.5] - create systemd service file remote_request.service")    
     with open ('/etc/systemd/system/remote_request.service', 'w') as rsh:
-        rsh.write('''\
-        [Unit]
-        Description=MQTT Remote access Server
+        rsh.write(textwrap.dedent('''
+            [Unit]
+            Description=MQTT Remote access Server
 
-        [Service]
-        Restart=always
-        ExecStartPre=/bin/sleep 10
-        ExecStart=/usr/local/sbin/remote_request.sh
-        PIDFile=/var/run/remote_request.pid
+            [Service]
+            Restart=always
+            ExecStartPre=/bin/sleep 10
+            ExecStart=/usr/local/sbin/remote_request.sh
+            PIDFile=/var/run/remote_request.pid
 
-        [Install]
-        WantedBy=multi-user.target    
-        ''')
+            [Install]
+            WantedBy=multi-user.target
+        '''))
     
     print("\t'-->[2.6] - check for all service scripts")
     list_files = subprocess.run(["ls", "/etc/systemd/system"])

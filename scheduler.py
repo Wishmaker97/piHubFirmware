@@ -8,6 +8,7 @@ import logging.handlers as handlers
 import logging
 import datetime
 import git
+import subprocess
 
 
 if __name__ == "__main__":
@@ -35,10 +36,12 @@ if __name__ == "__main__":
 
         api_update_scheduler_string = config_json['update_scheduler_cronjob']
         firmware_version = config_json['firmware_version']
+        ntp_server = config_json['ntp_server']
         
         ## initialize CronJob instance to handle update of cronjobs
         job_worker = CronJobManager()
 
+        ## update cronjob if needed
         if job_worker.checkIfScheduleIsDifferent(api_update_scheduler_string):            
             logging.info(msg=F"Removing existing Cronjobs that schedule Cronjobs that handle 'service_worker.py' @ {datetime.datetime.utcnow()} (UTC)")
             job_worker.removeExistingJobs()
@@ -49,6 +52,7 @@ if __name__ == "__main__":
         else:
             logging.info(msg=F"No need to update Cronjob (no changes) @ {datetime.datetime.utcnow()} (UTC)")
 
+        ## update git repo if needed
         try:
             git_repo = git.Repo(search_parent_directories=True)
             current_sha = git_repo.head.object.hexsha
@@ -58,19 +62,29 @@ if __name__ == "__main__":
                 print("hash is same as current")
             else:
                 os.system(F"cd ~/server/pi-hub && git pull origin main {firmware_version}")
+                daemon_reload = subprocess.Popen(['sudo', '-S', 'systemctl', 'daemon-reload'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
+                print(daemon_reload)
+                remote_request = subprocess.Popen(['sudo', '-S', 'systemctl', 'restart','remote_request.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
+                print(remote_request)
 
         except Exception as err:
             logging.exception(msg=F"error occurred during git operation: {err} @{datetime.datetime.utcnow()} (UTC)")
         
-        # try:
+        ## update ntp server
+        try:
+            is_server_different = False
+            with open("/etc/ntp.conf", "rw+") as f:
+                lines = f.readlines()
+                if F"server {ntp_server}" not in lines :
+                    is_server_different = True
 
-        #     if(str(current_sha)==str(firmware_version)):
-        #         print("hash is same as current")
-        #     else:
-        #         os.system(F"cd ~/server/pi-hub && git pull origin main {firmware_version}")
+            if(is_server_different):
+                print("update ntp server")
+            else:
+                print("DONT update ntp server")
 
-        # except Exception as err:
-        #     logging.exception(msg=F"error occurred during ntp update : {err} @{datetime.datetime.utcnow()} (UTC)")
+        except Exception as err:
+            logging.exception(msg=F"error occurred during ntp update : {err} @{datetime.datetime.utcnow()} (UTC)")
 
     except HTTPError as http_err:
         logging.exception(msg=F"HTTP error occurred: {http_err} @{datetime.datetime.utcnow()} (UTC)")
