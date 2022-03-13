@@ -76,9 +76,10 @@ if __name__ == "__main__":
             is_server_different = True
             with open("/etc/ntp.conf", "r") as f:
                 lines = f.readlines()
-                logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {lines}")
+                # logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {lines}")
                 for line in lines:
                     if F"server {ntp_server}" in line :
+                        logging.info(msg=F"opened ntp.conf @ {datetime.datetime.utcnow()} (UTC) {line}")
                         is_server_different = False
 
             if(is_server_different):
