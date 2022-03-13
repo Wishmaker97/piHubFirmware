@@ -91,10 +91,9 @@ if __name__ == "__main__":
                     f.writelines(lines)
 
                 logging.info(msg=F"/etc/ntp.conf was UPDATED @ {datetime.datetime.utcnow()} (UTC) server {ntp_server} @line number 18")
-                remote_request = subprocess.Popen(['sudo', '-S', 'systemctl', 'restart','remote_request.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
-                print(remote_request)
+                ntp_service = subprocess.Popen(['sudo', '-S', 'systemctl', 'restart','ntp.service'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=f'{os.getenv("PASSWORD")}'.encode())
+                # print(remote_request)
                 
-
             else:
                 print("DONT update ntp server")
 
