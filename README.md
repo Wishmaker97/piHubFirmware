@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 <div id="top"></div>
 
 <!-- PROJECT LOGO -->
@@ -14,57 +13,38 @@ This project was developed to provide remote access and control along with perio
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* create .env file in base directory with the following variables
-  ```
-  CONFIG_URL_ENDPOINT = "<enter url here>"
-  ```
+Burn .img file into a empty SD card using Pi imager (https://www.raspberrypi.com/software/)
 
 ### Installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/Wishmaker97/pi-hub.git
-   ```
-2. cd to Enter to project directory
-   ```sh
-   cd pi-hub
-   pip3 install virtualenv
-   ```
+1. go to /server/piHubFirmware directory
 
-3. create virtual environment 
    ```sh
-   python3 -m venv venv
+   cd /server/piHubFirmware
    ```
-4. activate virtual environment
+2. update .env file
+
    ```sh
-   source ./venv/bin/activate
-   ```
-5. install all neccessary packages 
-   ```sh
-   pip3 install -r ./requirements.txt
-   ```
-6. run script
-   ```sh
-   python3 incomming_traffic.py
-   python3 outging_traffic.py
+   sudo nano .env
    ```
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] sending data to MQTT topic based on cronjob linux
-- [x] on demand MQTT
+- [x] periodic reporting based on Cronjob syntax from API configuration
+- [x] on demand reporting 
+- [x] remotely configurable 
+- [x] automatic github firmware update based on `commit ID` provided via API
+- [X] automatic NTP server update based on `ntp_server` provided via API
 
 
 ### Built With
 
-* [flask (for testing ONLY)](https://flask.palletsprojects.com/en/2.0.x/)
+* [flask (for testing ONLY)](https://flask.palletsprojects.com/en/2.0.x/) test cosde at https://github.com/Wishmaker97/test_server
 * [paho MQTT client for python](https://www.eclipse.org/paho/index.php?page=clients/python/index.php)
 
 Special Thanks to 
 * [施广源](https://zhuanlan.zhihu.com/p/378137714)
-
 
 
 <!-- CONTACT -->
@@ -81,9 +61,9 @@ Special Thanks to
 [linkedin-url]: https://www.linkedin.com/in/vishmika-fernando-435923116/
 
 =======
-username: piHub01
+username: piHub
 password: admin123
 
-hostname: pihub01
+hostname: pihub
 SSH: password no certificates
->>>>>>> Stashed changes
+
