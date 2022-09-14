@@ -123,11 +123,12 @@ def main():
                     
                     ## try block for communication with Smart meter
                     try:              
-                        # meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-                        # meter_usage = meter_instance.getActivePower(smart_meter_address)
+                        meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
+                        print(meter_instance.getMeterNumber())
+                        meter_usage = meter_instance.getActivePower(smart_meter_address)
 
                         ## dummy for testing
-                        meter_usage = 100 + int(random.random() * 20)
+                        # meter_usage = 100 + int(random.random() * 20)
                         
                         meter_report['value'] = int(meter_usage)
 
