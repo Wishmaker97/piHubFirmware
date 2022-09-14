@@ -109,6 +109,8 @@ def main():
 
                 ## variable for holding all the data
                 meter_reports = []
+                meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
+                print(meter_instance.getMeterNumber())
 
                 ## iterate through the smart meters in the list ("meter_list")
                 for smart_meter in smart_meter_list:
@@ -123,10 +125,9 @@ def main():
                     
                     ## try block for communication with Smart meter
                     try:              
-                        meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-                        print(meter_instance.getMeterNumber())
+                       
                         meter_usage = meter_instance.getActivePower(smart_meter_address)
-
+                        
                         ## dummy for testing
                         # meter_usage = 100 + int(random.random() * 20)
                         
