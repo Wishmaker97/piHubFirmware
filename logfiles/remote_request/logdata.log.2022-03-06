@@ -1,0 +1,21 @@
+Mar 06 18:38:21 program_name [7244]: Starting new HTTP connection (1): 192.168.1.38:8080
+Mar 06 18:38:21 program_name [7244]: http://192.168.1.38:8080 "GET /api/config/202481587158093/ HTTP/1.1" 200 524
+Mar 06 18:38:23 program_name [7244]: MQTT connection failed : [WinError 10061] No connection could be made because the target machine actively refused it @2022-03-06 10:38:23.468454 (wait 600 seconds and try again)
+Traceback (most recent call last):
+  File "C:\Users\vishm\Documents\Projects\piHub\remote_request.py", line 61, in <module>
+    msg = subscribe.simple(TOPIC, qos=2, hostname=broker)
+  File "C:\Users\vishm\Documents\Projects\piHub\.venv\lib\site-packages\paho\mqtt\subscribe.py", line 270, in simple
+    callback(_on_message_simple, topics, qos, userdata, hostname, port,
+  File "C:\Users\vishm\Documents\Projects\piHub\.venv\lib\site-packages\paho\mqtt\subscribe.py", line 182, in callback
+    client.connect(hostname, port, keepalive)
+  File "C:\Users\vishm\Documents\Projects\piHub\.venv\lib\site-packages\paho\mqtt\client.py", line 914, in connect
+    return self.reconnect()
+  File "C:\Users\vishm\Documents\Projects\piHub\.venv\lib\site-packages\paho\mqtt\client.py", line 1044, in reconnect
+    sock = self._create_socket_connection()
+  File "C:\Users\vishm\Documents\Projects\piHub\.venv\lib\site-packages\paho\mqtt\client.py", line 3685, in _create_socket_connection
+    return socket.create_connection(addr, timeout=self._connect_timeout, source_address=source)
+  File "C:\Program Files\Python310\lib\socket.py", line 845, in create_connection
+    raise err
+  File "C:\Program Files\Python310\lib\socket.py", line 833, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it

@@ -110,7 +110,7 @@ def main():
                 ## variable for holding all the data
                 meter_reports = []
                 meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-                print(meter_instance.getMeterNumber())
+                # print(meter_instance.getMeterNumber())
 
                 ## iterate through the smart meters in the list ("meter_list")
                 for smart_meter in smart_meter_list:
