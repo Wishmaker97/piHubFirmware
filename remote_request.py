@@ -10,7 +10,7 @@ import hmac
 import hashlib
 import json
 import random
-import pydbus
+# import pydbus
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
@@ -183,8 +183,8 @@ def main():
                     elif command_json["cmd"] == "set_ntp_servers":
                         if DEBUG : print("INFO : Need to update ntp servers immediately")
                         logging.info(msg="Need to update ntp servers immediately")
-                        timedated = pydbus.SystemBus().get(".timedate1")
-                        dir(timedated)
+                        # timedated = pydbus.SystemBus().get(".timedate1")
+                        # dir(timedated)
 
                     else:
                         if DEBUG : print("WARNING : command is not an allowed instruction")
