@@ -156,10 +156,6 @@ def main():
             logging.exception(msg=F"Requested meter list from server FAILED, {err}")
             if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}")  
 
-        ## Get list of meter ids from json 
-        smart_meter_list = response_json['data']['meter_ids']  
-        print(smart_meter_list)          
-
         while True:
             if command:            
                 try:  
