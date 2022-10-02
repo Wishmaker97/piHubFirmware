@@ -51,6 +51,6 @@ class WatthourMeter:
 
 if __name__ == '__main__':
     while True:
-        # for comport in serial.tools.list_ports.comports():
-        WatthourMeter("/dev/ttyUSB0").getActivePower()
-        time.sleep(60)
+        for comport in serial.tools.list_ports.comports():
+            WatthourMeter(comport).getActivePower()
+            time.sleep(60)
