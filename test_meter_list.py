@@ -52,5 +52,7 @@ class WatthourMeter:
 if __name__ == '__main__':
     while True:
         for comport in serial.tools.list_ports.comports():
-            WatthourMeter(str(comport)).getActivePower()
-            time.sleep(60)
+            print(comport.device)
+            WatthourMeter(str(comport.device)).getActivePower()
+        
+        time.sleep(60)
