@@ -38,9 +38,6 @@ def derive_device_key(device_id, group_symmetric_key):
 def message_received_handler(message):
     global command
     command = message.data.decode('utf8')
-
-    if DEBUG : print("INFO : New command: {}".format(command))
-    logging.info(msg="New command: {}".format(command))   
     
 
 def send_meter_report(smart_meter_list, client):
@@ -164,7 +161,6 @@ def main():
             logging.info(msg="System ready for requests")
 
         while True:
-            global command
             if command!="":            
                 try:  
                     command_message = command
