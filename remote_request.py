@@ -161,6 +161,7 @@ def main():
             logging.info(msg="System ready for requests")
 
         while True:
+            client.on_message_received = message_received_handler
             if command!="":            
                 try:  
                     command_message = command
