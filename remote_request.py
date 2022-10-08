@@ -159,9 +159,10 @@ def main():
         finally:
             if DEBUG : print("INFO : System ready for requests")
             logging.info(msg="System ready for requests")
+            client.on_message_received = message_received_handler
 
         while True:
-            client.on_message_received = message_received_handler
+            
             if command!="":            
                 try:  
                     command_message = command
@@ -193,6 +194,9 @@ def main():
                 except Exception as err:
                     logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
                     if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
+                
+                finally:
+                    client.on_message_received = message_received_handler
             
     
     except KeyboardInterrupt:
