@@ -61,10 +61,10 @@ def send_meter_report(smart_meter_list, client):
             ## try block for communication with Smart meter
             try:              
                 
-                meter_usage = meter_instance.getActivePower(smart_meter_address)
+                # meter_usage = meter_instance.getActivePower(smart_meter_address)
                 
-                # # dummy for testing
-                # meter_usage = 100 + int(random.random() * 20)
+                # dummy for testing
+                meter_usage = 100 + int(random.random() * 20)
                 
                 meter_report['value'] = int(meter_usage)
 
@@ -91,11 +91,11 @@ def send_meter_report(smart_meter_list, client):
                 client.send_message(message)                   
 
             except Exception as err:
-                logging.exception(msg="Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
-                if DEBUG : print("EXCEPTION : Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
+                logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
+                if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
 
-            if DEBUG : print("INFO : Scheduled Reports sent successfully")     
-            logging.info(msg="Scheduled Reports sent successfully")                 
+            if DEBUG : print("INFO : Requested Reports sent successfully")     
+            logging.info(msg="Requested Reports sent successfully")                 
     
     except Exception as err:
         logging.exception(msg=err)
@@ -183,8 +183,6 @@ def main():
                     elif command_json["cmd"] == "set_ntp_servers":
                         if DEBUG : print("INFO : Need to update ntp servers immediately")
                         logging.info(msg="Need to update ntp servers immediately")
-                        # timedated = pydbus.SystemBus().get(".timedate1")
-                        # dir(timedated)
 
                     else:
                         if DEBUG : print("WARNING : command is not an allowed instruction")
