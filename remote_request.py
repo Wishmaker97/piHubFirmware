@@ -10,12 +10,11 @@ import hmac
 import hashlib
 import json
 import random
-# import pydbus
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
 
-DEBUG = False
+DEBUG = True
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
@@ -39,6 +38,10 @@ def derive_device_key(device_id, group_symmetric_key):
 def message_received_handler(message):
     global command
     command = message.data.decode('utf8')
+
+    if DEBUG : print("INFO : New command (processing...): {}".format(command))
+    logging.info(msg="New command (processing...): {}".format(command))   
+    
 
 def send_meter_report(smart_meter_list, client):
     try: 
@@ -154,7 +157,11 @@ def main():
 
         except Exception as err:
             logging.exception(msg=F"Requested meter list from server FAILED, {err}")
-            if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}")  
+            if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}") 
+
+        finally:
+            if DEBUG : print("INFO : System ready for requests")
+            logging.info(msg="System ready for requests")
 
         while True:
             if command:            
@@ -162,8 +169,8 @@ def main():
                     command_message = command
                     command = ""
 
-                    if DEBUG : print("INFO : Response : {}".format(command_message))
-                    logging.info(msg="Response : {}".format(command_message))   
+                    if DEBUG : print("INFO : New command (processing...): {}".format(command_message))
+                    logging.info(msg="New command (processing...): {}".format(command_message))   
                                         
                     command_json = json.loads(command_message)  
 

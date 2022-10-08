@@ -42,7 +42,7 @@ class WatthourMeter:
                 resultList = self.resultListProcess(result['data'], '04')
                 resultList.reverse()
                 addressField.reverse()
-                # print(resultList)
+                print(resultList)
                 meterNo = ''.join(addressField)
                 meterRecord = float(resultList[0]) * 10000 + float(resultList[1]) * 100 + float(resultList[2]) + float(resultList[3]) * 0.01
                 print('[{0}][{1}] 表显: {2} kWh'.format(datetime.datetime.now(), meterNo, meterRecord))
@@ -52,7 +52,6 @@ class WatthourMeter:
 if __name__ == '__main__':
     while True:
         for comport in serial.tools.list_ports.comports():
-            print(comport.device)
             WatthourMeter(str(comport.device)).getActivePower()
         
         time.sleep(60)
