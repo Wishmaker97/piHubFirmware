@@ -61,10 +61,10 @@ def send_meter_report(smart_meter_list, client):
             ## try block for communication with Smart meter
             try:              
                 
-                # meter_usage = meter_instance.getActivePower(smart_meter_address)
+                meter_usage = meter_instance.getActivePower(smart_meter_address)
                 
                 # dummy for testing
-                meter_usage = 100 + int(random.random() * 20)
+                # meter_usage = 100 + int(random.random() * 20)
                 
                 meter_report['value'] = int(meter_usage)
 
@@ -161,8 +161,7 @@ def main():
             logging.info(msg="System ready for requests")
             client.on_message_received = message_received_handler
 
-        while True:
-            
+        while True:            
             if command!="":            
                 try:  
                     command_message = command
