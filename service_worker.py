@@ -121,7 +121,7 @@ def main():
                     smart_meter_address = [smart_meter[i:i + 2] for i in range(0, len(smart_meter), 2)][::-1]
 
                     meter_report['meter_id'] = smart_meter
-                    meter_report['timestamp'] = datetime.datetime.now().isoformat()[:23]+'Z'
+                    meter_report['timestamp'] = datetime.datetime.now().astimezone().isoformat()[:23]+'Z'
                     
                     ## try block for communication with Smart meter
                     try:              
