@@ -14,7 +14,7 @@ import random
 from azure.iot.device import IoTHubDeviceClient, Message
 
 
-DEBUG = True
+DEBUG = False
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
@@ -168,26 +168,26 @@ def main():
                     command = ""
 
                     if DEBUG : print("INFO : New command (processing...): {}".format(command_message))
-                    logging.info(msg="New command (processing...): {}".format(command_message))   
+                    # logging.info(msg="New command (processing...): {}".format(command_message))   
                                         
                     command_json = json.loads(command_message)  
 
                     if DEBUG : print("INFO : jsonified response : {}".format(command_json))
-                    logging.info(msg="jsonified response : {}".format(command_json))   
+                    # logging.info(msg="jsonified response : {}".format(command_json))   
 
                     if command_json["cmd"] == "get_meter_reports":
                         if DEBUG : print("INFO : Need to send meter report immediately")
-                        logging.info(msg="Need to send meter report immediately")
+                        # logging.info(msg="Need to send meter report immediately")
 
                         send_meter_report(command_json["args"]["meter_ids"], client)
                     
                     elif command_json["cmd"] == "set_ntp_servers":
                         if DEBUG : print("INFO : Need to update ntp servers immediately")
-                        logging.info(msg="Need to update ntp servers immediately")
+                        # logging.info(msg="Need to update ntp servers immediately")
 
                     else:
                         if DEBUG : print("WARNING : command is not an allowed instruction")
-                        logging.info(msg="Command is not an allowed instruction")                               
+                        # logging.info(msg="Command is not an allowed instruction")                               
 
 
                 except Exception as err:
