@@ -17,6 +17,7 @@ from azure.iot.device import IoTHubDeviceClient, Message
 
 
 DEBUG = False
+LOG = False
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
@@ -57,13 +58,13 @@ def main():
         )
     
     client.connect()
-    logging.info(msg=F"Connected to AZURE IoT server")
+    if LOG : logging.info(msg=F"Connected to AZURE IoT server")
     if DEBUG : print("INFO : Connected to AZURE IoT server")
 
     try:
         while True:
             ## adding timestamp to logfile
-            logging.info(F"Start Script to send timed report")
+            if LOG : logging.info(F"Start Script to send timed report")
 
             if DEBUG : print(F"INFO : Start Script to send timed report @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
 
@@ -77,7 +78,7 @@ def main():
 
                 if DEBUG : print("INFO : Waiting for response")
 
-                logging.info(msg="Requested meter list from server")
+                if LOG : logging.info(msg="Requested meter list from server")
 
                 client.on_message_received = message_received_handler
 
@@ -95,10 +96,10 @@ def main():
 
                 if DEBUG : print("INFO : Response : {}".format(response_json))
 
-                logging.info(msg="Response : {}".format(response_json))
+                if LOG : logging.info(msg="Response : {}".format(response_json))
 
             except Exception as err:
-                logging.exception(msg=F"Requested meter list from server FAILED, {err}")
+                if LOG : logging.exception(msg=F"Requested meter list from server FAILED, {err}")
                 if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}")  
 
             ## Get list of meter ids from json 
@@ -133,7 +134,7 @@ def main():
                         
                         meter_report['value'] = int(meter_usage)
 
-                        logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
+                        if LOG : logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
                         if DEBUG : print(F"INFO : smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
 
                     except Exception as err:
@@ -145,7 +146,7 @@ def main():
                     finally:
                         meter_reports.append(meter_report)
                 
-                logging.info(msg=F"Got smart meter data from smart meters")
+                if LOG : logging.info(msg=F"Got smart meter data from smart meters")
                 if DEBUG : print("\nINFO : Got smart meter data from smart meters\n")
 
                 for meter in meter_reports:
@@ -156,14 +157,14 @@ def main():
                         client.send_message(message)                   
 
                     except Exception as err:
-                        logging.exception(msg="Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
+                        if LOG : logging.exception(msg="Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
                         if DEBUG : print("EXCEPTION : Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
 
                     if DEBUG : print("INFO : Scheduled Reports sent successfully")     
-                    logging.info(msg="Scheduled Reports sent successfully")                 
+                    if LOG : logging.info(msg="Scheduled Reports sent successfully")                 
             
             except Exception as err:
-                logging.exception(msg=err)
+                if LOG : logging.exception(msg=err)
                 if DEBUG : print(F"EXCEPTION : {err}")         
             
             finally:
@@ -174,22 +175,23 @@ def main():
     
     except KeyboardInterrupt:
         if DEBUG : print(F"WARNING : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        logging.warning(msg="IoTHubClient stopped by user")
+        if LOG : logging.warning(msg="IoTHubClient stopped by user")
 
     finally:        
         if DEBUG : print(F"WARNING : Shutting down IoTHubClient @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        logging.warning(msg="Shutting down IoTHubClient")
+        if LOG : logging.warning(msg="Shutting down IoTHubClient")
         client.shutdown()
 
     
 if __name__ == '__main__':
 
-    formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
-    log_handler = handlers.TimedRotatingFileHandler("logfiles/service_worker/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
-    log_handler.setFormatter(formatter)
-    logger = logging.getLogger()
-    logger.addHandler(log_handler)
-    logger.setLevel(logging.DEBUG)
+    if LOG : 
+        formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
+        log_handler = handlers.TimedRotatingFileHandler("logfiles/service_worker/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
+        log_handler.setFormatter(formatter)
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
     main()
  

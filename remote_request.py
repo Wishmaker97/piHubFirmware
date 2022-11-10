@@ -15,6 +15,7 @@ from azure.iot.device import IoTHubDeviceClient, Message
 
 
 DEBUG = False
+LOG = False
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
@@ -68,19 +69,19 @@ def send_meter_report(smart_meter_list, client):
                 
                 meter_report['value'] = int(meter_usage)
 
-                logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
+                if LOG : logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
                 if DEBUG : print(F"INFO : smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
 
             except Exception as err:
                 meter_report['value'] = -1
 
-                logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
+                if LOG : logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
                 if DEBUG : print(F"EXCEPTION : Data retrieval from {smart_meter} was unsuccessfull")
             
             finally:
                 meter_reports.append(meter_report)
         
-        logging.info(msg=F"Got smart meter data from smart meters")
+        if LOG : logging.info(msg=F"Got smart meter data from smart meters")
         if DEBUG : print("\nINFO : Got smart meter data from smart meters\n")
 
         for meter in meter_reports:
@@ -91,14 +92,14 @@ def send_meter_report(smart_meter_list, client):
                 client.send_message(message)                   
 
             except Exception as err:
-                logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
+                if LOG : logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
                 if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
 
             if DEBUG : print("INFO : Requested Reports sent successfully")     
-            logging.info(msg="Requested Reports sent successfully")                 
+            if LOG : logging.info(msg="Requested Reports sent successfully")                 
     
     except Exception as err:
-        logging.exception(msg=err)
+        if LOG : logging.exception(msg=err)
         if DEBUG : print(F"EXCEPTION : {err}")
 
 def main():
@@ -117,11 +118,11 @@ def main():
         )
     
     client.connect()
-    logging.info(msg=F"Connected to AZURE IoT server")
+    if LOG : logging.info(msg=F"Connected to AZURE IoT server")
     if DEBUG : print("INFO : Connected to AZURE IoT server")
     try:
         ## adding timestamp to logfile
-        logging.info(F"Start Script to listen for remote requests")
+        if LOG : logging.info(F"Start Script to listen for remote requests")
 
         if DEBUG : print(F"INFO : Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
         client.on_message_received = message_received_handler
@@ -136,7 +137,7 @@ def main():
 
             if DEBUG : print("INFO : Waiting for response")
 
-            logging.info(msg="Requested meter list from server")
+            if LOG : logging.info(msg="Requested meter list from server")
 
             client.on_message_received = message_received_handler
 
@@ -150,15 +151,15 @@ def main():
 
             if DEBUG : print("INFO : Response : {}".format(response_json))
 
-            logging.info(msg="Response : {}".format(response_json))
+            if LOG : logging.info(msg="Response : {}".format(response_json))
 
         except Exception as err:
-            logging.exception(msg=F"Requested meter list from server FAILED, {err}")
+            if LOG : logging.exception(msg=F"Requested meter list from server FAILED, {err}")
             if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}") 
 
         finally:
             if DEBUG : print("INFO : System ready for requests")
-            logging.info(msg="System ready for requests")
+            if LOG : logging.info(msg="System ready for requests")
             client.on_message_received = message_received_handler
 
         while True:            
@@ -191,7 +192,7 @@ def main():
 
 
                 except Exception as err:
-                    logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
+                    if LOG : logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
                     if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
                 
                 finally:
@@ -200,21 +201,22 @@ def main():
     
     except KeyboardInterrupt:
         if DEBUG : print(F"WARNING : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        logging.warning(msg="IoTHubClient stopped by user")
+        if LOG : logging.warning(msg="IoTHubClient stopped by user")
 
     finally:        
         if DEBUG : print(F"WARNING : Shutting down IoTHubClient @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        logging.warning(msg="Shutting down IoTHubClient")
+        if LOG : logging.warning(msg="Shutting down IoTHubClient")
         client.shutdown()
 
 
 if __name__ == "__main__":
 
-    formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
-    log_handler = handlers.TimedRotatingFileHandler("logfiles/remote_request/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
-    log_handler.setFormatter(formatter)
-    logger = logging.getLogger()
-    logger.addHandler(log_handler)
-    logger.setLevel(logging.DEBUG)
+    if LOG : 
+        formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
+        log_handler = handlers.TimedRotatingFileHandler("logfiles/remote_request/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
+        log_handler.setFormatter(formatter)
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
     main()
