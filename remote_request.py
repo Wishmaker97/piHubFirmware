@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-from WatthourMeter import WatthourMeter
 from uuid import getnode as get_mac
 import datetime
 import logging.handlers as handlers
@@ -21,6 +20,7 @@ MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
 
 command = ""
+client = None
 
 def derive_device_key(device_id, group_symmetric_key):
     """
@@ -37,70 +37,23 @@ def derive_device_key(device_id, group_symmetric_key):
 
 
 def message_received_handler(message):
-    global command
-    command = message.data.decode('utf8')
-    
+    try:
+        command_message = message.data.decode('utf8')
+        command_json = json.loads(command_message)  
+        if command_json["cmd"] == "get_meter_reports":
+            if DEBUG : print("INFO : Need to send meter report immediately")
+            send_meter_report(command_json["args"]["meter_ids"], client)
 
-def send_meter_report(smart_meter_list, client):
-    try: 
-        load_dotenv('.env', override=True)
-        ## variable for holding all the data
-        meter_reports = []
-        meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-
-        ## iterate through the smart meters in the list ("meter_list")
-        for smart_meter in smart_meter_list:
-            
-            ## variable for holding data of specific meter
-            meter_report = {}
-
-            smart_meter_address = [smart_meter[i:i + 2] for i in range(0, len(smart_meter), 2)][::-1]
-
-            meter_report['meter_id'] = smart_meter
-            meter_report['timestamp'] = datetime.datetime.now().astimezone().isoformat()[:23]+'Z'
-            
-            ## try block for communication with Smart meter
-            try:              
-                
-                meter_usage = meter_instance.getActivePower(smart_meter_address)
-                
-                # dummy for testing
-                # meter_usage = 100 + int(random.random() * 20)
-                
-                meter_report['value'] = int(meter_usage)
-
-                if LOG : logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
-                if DEBUG : print(F"INFO : smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
-
-            except Exception as err:
-                meter_report['value'] = -1
-
-                if LOG : logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
-                if DEBUG : print(F"EXCEPTION : Data retrieval from {smart_meter} was unsuccessfull")
-            
-            finally:
-                meter_reports.append(meter_report)
-        
-        if LOG : logging.info(msg=F"Got smart meter data from smart meters")
-        if DEBUG : print("\nINFO : Got smart meter data from smart meters\n")
-
-        for meter in meter_reports:
-            try:                      
-                msg_txt_formatted_send_report = MSG_TXT_SEND_REPORT.format(meter_id=meter['meter_id'], timestamp=meter['timestamp'], value=meter['value'])
-                message = Message(msg_txt_formatted_send_report)
-
-                client.send_message(message)                   
-
-            except Exception as err:
-                if LOG : logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
-                if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
-
-            if DEBUG : print("INFO : Requested Reports sent successfully")     
-            if LOG : logging.info(msg="Requested Reports sent successfully")                 
-    
+        elif command_json["cmd"] == "set_ntp_servers":
+            if DEBUG : print("INFO : Need to update ntp servers immediately")
+        else:
+            if DEBUG : print("WARNING : command is not an allowed instruction")
     except Exception as err:
-        if LOG : logging.exception(msg=err)
-        if DEBUG : print(F"EXCEPTION : {err}")
+        if LOG : logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
+        if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
+                
+def send_meter_report(smart_meter_list, client):
+    print("### send_meter_report!!!!")
 
 def main():
 
@@ -126,78 +79,12 @@ def main():
 
         if DEBUG : print(F"INFO : Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
         client.on_message_received = message_received_handler
-        global command
-        try:
-            msg_txt_formatted = MSG_TXT_GET_ID.format()
-            message = Message(msg_txt_formatted)
-            
-            if DEBUG : print("INFO : Sending message - {}".format(message))
-                
-            client.send_message(message)
-
-            if DEBUG : print("INFO : Waiting for response")
-
-            if LOG : logging.info(msg="Requested meter list from server")
-
-            client.on_message_received = message_received_handler
-
-            while (command==""):
-                continue
-
-            response_message = command
-            command = ""               
-
-            response_json = json.loads(response_message)  
-
-            if DEBUG : print("INFO : Response : {}".format(response_json))
-
-            if LOG : logging.info(msg="Response : {}".format(response_json))
-
-        except Exception as err:
-            if LOG : logging.exception(msg=F"Requested meter list from server FAILED, {err}")
-            if DEBUG : print(F"EXCEPTION : Requested meter list from server FAILED, {err}") 
-
-        finally:
-            if DEBUG : print("INFO : System ready for requests")
-            if LOG : logging.info(msg="System ready for requests")
-            client.on_message_received = message_received_handler
 
         while True:            
-            if command!="":            
-                try:  
-                    command_message = command
-                    command = ""
-
-                    if DEBUG : print("INFO : New command (processing...): {}".format(command_message))
-                    # logging.info(msg="New command (processing...): {}".format(command_message))   
-                                        
-                    command_json = json.loads(command_message)  
-
-                    if DEBUG : print("INFO : jsonified response : {}".format(command_json))
-                    # logging.info(msg="jsonified response : {}".format(command_json))   
-
-                    if command_json["cmd"] == "get_meter_reports":
-                        if DEBUG : print("INFO : Need to send meter report immediately")
-                        # logging.info(msg="Need to send meter report immediately")
-
-                        send_meter_report(command_json["args"]["meter_ids"], client)
-                    
-                    elif command_json["cmd"] == "set_ntp_servers":
-                        if DEBUG : print("INFO : Need to update ntp servers immediately")
-                        # logging.info(msg="Need to update ntp servers immediately")
-
-                    else:
-                        if DEBUG : print("WARNING : command is not an allowed instruction")
-                        # logging.info(msg="Command is not an allowed instruction")                               
-
-
-                except Exception as err:
-                    if LOG : logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
-                    if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
-                
-                finally:
-                    client.on_message_received = message_received_handler
-            
+            selection = input("Press Q to quit\n")
+            if selection == "Q" or selection == "q":
+                print("Quitting...")
+                break
     
     except KeyboardInterrupt:
         if DEBUG : print(F"WARNING : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
@@ -210,8 +97,7 @@ def main():
 
 
 if __name__ == "__main__":
-
-    if LOG : 
+    if LOG: 
         formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
         log_handler = handlers.TimedRotatingFileHandler("logfiles/remote_request/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
         log_handler.setFormatter(formatter)
