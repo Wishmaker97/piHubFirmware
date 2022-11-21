@@ -8,7 +8,7 @@ import base64
 import hmac
 import hashlib
 import json
-import random
+from WatthourMeter import WatthourMeter
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
@@ -53,8 +53,65 @@ def message_received_handler(message):
         if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
                 
 def send_meter_report(smart_meter_list, client):
-    print("### send_meter_report!!!!")
+    try: 
+        load_dotenv('.env', override=True)
+        ## variable for holding all the data
+        meter_reports = []
+        meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
 
+        ## iterate through the smart meters in the list ("meter_list")
+        for smart_meter in smart_meter_list:
+            
+            ## variable for holding data of specific meter
+            meter_report = {}
+
+            smart_meter_address = [smart_meter[i:i + 2] for i in range(0, len(smart_meter), 2)][::-1]
+
+            meter_report['meter_id'] = smart_meter
+            meter_report['timestamp'] = datetime.datetime.now().astimezone().isoformat()[:23]+'Z'
+            
+            ## try block for communication with Smart meter
+            try:              
+                
+                meter_usage = meter_instance.getActivePower(smart_meter_address)
+                
+                # dummy for testing
+                # meter_usage = 100 + int(random.random() * 20)
+                
+                meter_report['value'] = int(meter_usage)
+
+                if LOG : logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
+                if DEBUG : print(F"INFO : smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
+
+            except Exception as err:
+                meter_report['value'] = -1
+
+                if LOG : logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
+                if DEBUG : print(F"EXCEPTION : Data retrieval from {smart_meter} was unsuccessfull")
+            
+            finally:
+                meter_reports.append(meter_report)
+        
+        if LOG : logging.info(msg=F"Got smart meter data from smart meters")
+        if DEBUG : print("\nINFO : Got smart meter data from smart meters\n")
+
+        for meter in meter_reports:
+            try:                      
+                msg_txt_formatted_send_report = MSG_TXT_SEND_REPORT.format(meter_id=meter['meter_id'], timestamp=meter['timestamp'], value=meter['value'])
+                message = Message(msg_txt_formatted_send_report)
+
+                client.send_message(message)                   
+
+            except Exception as err:
+                if LOG : logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
+                if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
+
+            if DEBUG : print("INFO : Requested Reports sent successfully")     
+            if LOG : logging.info(msg="Requested Reports sent successfully")                 
+    
+    except Exception as err:
+        if LOG : logging.exception(msg=err)
+        if DEBUG : print(F"EXCEPTION : {err}")
 def main():
 
     load_dotenv('.env', override=True)
