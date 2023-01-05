@@ -8,13 +8,14 @@ import base64
 import hmac
 import hashlib
 import json
+import random
 from WatthourMeter import WatthourMeter
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
 
-DEBUG = False
-LOG = False
+DEBUG = True
+LOG = True
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
@@ -38,6 +39,7 @@ def derive_device_key(device_id, group_symmetric_key):
 
 def message_received_handler(message):
     try:
+        global client
         command_message = message.data.decode('utf8')
         command_json = json.loads(command_message)  
         if command_json["cmd"] == "get_meter_reports":
@@ -121,6 +123,7 @@ def main():
     HostName = str(os.getenv('HostName'))
 
     symmetricKey = derive_device_key(DeviceId, GroupSymmetricKey)
+    global client
     client = IoTHubDeviceClient.create_from_symmetric_key(
             symmetric_key=symmetricKey,
             hostname=HostName,
