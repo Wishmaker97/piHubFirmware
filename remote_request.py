@@ -129,6 +129,8 @@ def main():
             hostname=HostName,
             device_id=DeviceId
         )
+
+    
     
     client.connect()
     if LOG : logging.info(msg=F"Connected to AZURE IoT server")
@@ -165,4 +167,4 @@ if __name__ == "__main__":
         logger.addHandler(log_handler)
         logger.setLevel(logging.DEBUG)
 
-    main()
+    # main()
