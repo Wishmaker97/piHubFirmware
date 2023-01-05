@@ -27,6 +27,8 @@ MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}",
 
 response = ""
 
+error = None
+
 def send_meter_report(smart_meter_list, client):
     try: 
         load_dotenv('.env', override=True)
@@ -60,9 +62,9 @@ def send_meter_report(smart_meter_list, client):
 
             except Exception as err:
                 meter_report['value'] = -1
-
                 if LOG : logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
                 if DEBUG : print(F"EXCEPTION : Data retrieval from {smart_meter} was unsuccessfull")
+
             
             finally:
                 meter_reports.append(meter_report)
@@ -75,18 +77,21 @@ def send_meter_report(smart_meter_list, client):
                 msg_txt_formatted_send_report = MSG_TXT_SEND_REPORT.format(meter_id=meter['meter_id'], timestamp=meter['timestamp'], value=meter['value'])
                 message = Message(msg_txt_formatted_send_report)
 
-                client.send_message(message)                   
+                client.send_message(message)   
+
+                if DEBUG : print("INFO : Requested Reports sent successfully")     
+                if LOG : logging.info(msg="Requested Reports sent successfully")                    
 
             except Exception as err:
                 if LOG : logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
                 if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
 
-            if DEBUG : print("INFO : Requested Reports sent successfully")     
-            if LOG : logging.info(msg="Requested Reports sent successfully")                 
+                         
     
     except Exception as err:
         if LOG : logging.exception(msg=err)
         if DEBUG : print(F"EXCEPTION : {err}")
+
  
 def message_received_handler(message):
     try:
@@ -107,6 +112,7 @@ def message_received_handler(message):
             global response
             response = command_message
     except Exception as err:
+
         if LOG : logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
         if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
 
@@ -152,16 +158,13 @@ class ServiceWorkerThread(threading.Thread):
 
                 self.client_object.on_message_received = message_received_handler
 
-                ## deprecated method for waiting for response from server
-                # response = client.receive_message()  # blocking call
-                # response_message = response.data.decode('utf8')
                 global response
                 while (response==""):
                     continue
 
                 response_message = response
                 response = "" 
-                print(response_message)      
+  
                 response_for_service_worker = False;        
 
                 response_json = json.loads(response_message)  
@@ -170,19 +173,14 @@ class ServiceWorkerThread(threading.Thread):
 
                 if LOG : logging.info(msg="(Secondary Thread) - Response : {}".format(response_json))
 
-            except Exception as err:
-                if LOG : logging.exception(msg=F"(Secondary Thread) - Requested meter list from server FAILED, {err}")
-                if DEBUG : print(F"EXCEPTION : (Secondary Thread) - Requested meter list from server FAILED, {err}")  
+                ## Get list of meter ids from json 
 
-            ## Get list of meter ids from json 
-            smart_meter_list = response_json['data']['meter_ids']            
+                smart_meter_list = response_json['data']['meter_ids']            
 
-            ## Main try block
-            try: 
                 ## variable for holding all the data
                 meter_reports = []
                 meter_instance = WatthourMeter(str(os.getenv('COM_PORT')))
-                # print(meter_instance.getMeterNumber())
+
 
                 ## iterate through the smart meters in the list ("meter_list")
                 for smart_meter in smart_meter_list:
@@ -225,14 +223,15 @@ class ServiceWorkerThread(threading.Thread):
                         msg_txt_formatted_send_report = MSG_TXT_SEND_REPORT.format(meter_id=meter['meter_id'], timestamp=meter['timestamp'], value=meter['value'])
                         message = Message(msg_txt_formatted_send_report)
 
-                        client.send_message(message)                   
+                        client.send_message(message)     
+
+                        if DEBUG : print("INFO : Scheduled Reports sent successfully")     
+                        if LOG : logging.info(msg="Scheduled Reports sent successfully")                
 
                     except Exception as err:
                         if LOG : logging.exception(msg="Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
                         if DEBUG : print("EXCEPTION : Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
-
-                    if DEBUG : print("INFO : Scheduled Reports sent successfully")     
-                    if LOG : logging.info(msg="Scheduled Reports sent successfully")  
+                    
             
             except Exception as err:
                 if LOG : logging.exception(msg=F"Requested meter list from server FAILED, {err}")
@@ -269,16 +268,20 @@ def main():
     if DEBUG : print("INFO : (main Thread) - Connected to AZURE IoT server")
     try:
         ## adding timestamp to logfile
-        if LOG : logging.info(F"(main Thread) - Start Script to listen for remote requests")
-
-        if DEBUG : print(F"INFO : (main Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
         client.on_message_received = message_received_handler
 
-        while True:            
-            selection = input("Press Q to quit\n")
-            if selection == "Q" or selection == "q":
-                if DEBUG : print(F"INFO : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-                break
+        message_flag = True
+        while True: 
+            if (message_flag):
+                if LOG : logging.info(F"(main Thread) - Start Script to listen for remote requests")
+
+                if DEBUG : print(F"INFO : (main Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
+                message_flag = False
+                           
+            # selection = input("Press Q to quit\n")
+            # if selection == "Q" or selection == "q":
+            #     if DEBUG : print(F"INFO : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
+            #     break
     
     except KeyboardInterrupt:
         if DEBUG : print(F"WARNING : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
