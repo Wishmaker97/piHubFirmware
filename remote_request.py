@@ -14,8 +14,8 @@ from WatthourMeter import WatthourMeter
 from azure.iot.device import IoTHubDeviceClient, Message
 
 
-DEBUG = True
-LOG = True
+DEBUG = False
+LOG = False
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
 MSG_TXT_SEND_REPORT = '{{ "data": {{"meter_reports": [{{"meter_id":"{meter_id}","timestamp":"{timestamp}","value":{value} }}]}}}}'
