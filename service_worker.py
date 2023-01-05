@@ -15,8 +15,8 @@ import time
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
-DEBUG = True
-LOG = True
+DEBUG = False
+LOG = False
 
 response_for_service_worker = False
 
@@ -294,7 +294,7 @@ def main():
 if __name__ == "__main__":
     if LOG: 
         formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')    
-        log_handler = handlers.TimedRotatingFileHandler("logfiles/remote_request/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
+        log_handler = handlers.TimedRotatingFileHandler("logfiles/service_worker/logdata.log", when='midnight', encoding='utf-8',backupCount=30, interval=1)
         log_handler.setFormatter(formatter)
         logger = logging.getLogger()
         logger.addHandler(log_handler)
