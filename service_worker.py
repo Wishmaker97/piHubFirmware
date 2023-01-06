@@ -151,7 +151,7 @@ class ServiceWorkerThread(threading.Thread):
 
                 global response_for_service_worker
                 response_for_service_worker = True;
-                    
+                
                 client.send_message(message)
 
                 if DEBUG : print("INFO : (Secondary Thread) - Waiting for response")
@@ -166,7 +166,7 @@ class ServiceWorkerThread(threading.Thread):
 
                 response_message = response
                 response = "" 
-  
+
                 response_for_service_worker = False;        
 
                 response_json = json.loads(response_message)  
