@@ -16,7 +16,7 @@ import time
 from azure.iot.device import IoTHubDeviceClient, Message
 
 DEBUG = True
-LOG = True
+LOG = False
 
 response_for_service_worker = False
 
