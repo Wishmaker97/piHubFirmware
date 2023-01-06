@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from uuid import getnode as get_mac
+# from uuid import getnode as get_mac
 import datetime
 import logging.handlers as handlers
 import logging
@@ -57,20 +57,20 @@ def send_meter_report(smart_meter_list, client):
                 
                 meter_report['value'] = int(meter_usage)
 
-                if LOG : logging.info(msg=F"smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
-                if DEBUG : print(F"INFO : smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
+                if LOG : logging.info(msg=F"(Primary Thread) - smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")
+                if DEBUG : print(F"INFO : (Primary Thread) - smart meter id [{smart_meter}] returned {meter_usage}kWh @{meter_report['timestamp']}")                   
 
             except Exception as err:
                 meter_report['value'] = -1
-                if LOG : logging.exception(msg=F"Data retrieval from {smart_meter} was unsuccessfull")
-                if DEBUG : print(F"EXCEPTION : Data retrieval from {smart_meter} was unsuccessfull")
+                if LOG : logging.exception(msg=F"(Primary Thread) - Data retrieval from {smart_meter} was unsuccessfull")
+                if DEBUG : print(F"EXCEPTION : (Primary Thread) - Data retrieval from {smart_meter} was unsuccessfull")
 
             
             finally:
                 meter_reports.append(meter_report)
         
-        if LOG : logging.info(msg=F"Got smart meter data from smart meters")
-        if DEBUG : print("\nINFO : Got smart meter data from smart meters\n")
+        if LOG : logging.info(msg=F"(Primary Thread) - Got smart meter data from smart meters")
+        if DEBUG : print("\nINFO : (Primary Thread) - Got smart meter data from smart meters\n")
 
         for meter in meter_reports:
             try:                      
@@ -79,18 +79,18 @@ def send_meter_report(smart_meter_list, client):
 
                 client.send_message(message)   
 
-                if DEBUG : print("INFO : Requested Reports sent successfully")     
-                if LOG : logging.info(msg="Requested Reports sent successfully")                    
+                if DEBUG : print("INFO : (Primary Thread) - Requested Reports sent successfully for {meter_id}".format(meter_id=meter['meter_id']))     
+                if LOG : logging.info(msg="(Primary Thread) - Requested Reports sent successfully for {meter_id}".format(meter_id=meter['meter_id']))                    
 
             except Exception as err:
-                if LOG : logging.exception(msg="Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
-                if DEBUG : print("EXCEPTION : Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
+                if LOG : logging.exception(msg="(Primary Thread) - Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
+                if DEBUG : print("EXCEPTION : (Primary Thread) - Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
 
                          
     
     except Exception as err:
         if LOG : logging.exception(msg=err)
-        if DEBUG : print(F"EXCEPTION : {err}")
+        if DEBUG : print(F"EXCEPTION : (Primary Thread) - {err}")
 
  
 def message_received_handler(message):
@@ -156,7 +156,7 @@ class ServiceWorkerThread(threading.Thread):
 
                 if LOG : logging.info(msg="(Secondary Thread) - Requested meter list from server")
 
-                self.client_object.on_message_received = message_received_handler
+                # self.client_object.on_message_received = message_received_handler
 
                 global response
                 while (response==""):
@@ -223,10 +223,10 @@ class ServiceWorkerThread(threading.Thread):
                         msg_txt_formatted_send_report = MSG_TXT_SEND_REPORT.format(meter_id=meter['meter_id'], timestamp=meter['timestamp'], value=meter['value'])
                         message = Message(msg_txt_formatted_send_report)
 
-                        client.send_message(message)     
+                        self.client_object.send_message(message)     
 
-                        if DEBUG : print("INFO : (Secondary Thread) - Scheduled Reports sent successfully")     
-                        if LOG : logging.info(msg="(Secondary Thread) - Scheduled Reports sent successfully")                
+                        if DEBUG : print("INFO : (Secondary Thread) - Scheduled Reports sent successfully for {meter_id}".format(meter_id=meter['meter_id']))     
+                        if LOG : logging.info(msg="(Secondary Thread) - Scheduled Reports sent successfully{meter_id}".format(meter_id=meter['meter_id']))                
 
                     except Exception as err:
                         if LOG : logging.exception(msg="(Secondary Thread) - Scheduled Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
@@ -240,6 +240,7 @@ class ServiceWorkerThread(threading.Thread):
             finally:
                 load_dotenv('.env', override=True)
                 period_time_value = int(os.getenv('PeriodValue'))
+                if LOG : logging.exception(msg=F"(Secondary Thread) - {period_time_value} seconds waiting time")
                 if DEBUG : print(F"INFO : (Secondary Thread) - {period_time_value} seconds waiting time")    
                 time.sleep(period_time_value)
         
@@ -261,31 +262,31 @@ def main():
             device_id=DeviceId
         )    
     
-    client.connect()
-    thread_item = ServiceWorkerThread(client)
-    thread_item.start()
-    if LOG : logging.info(msg=F"(main Thread) - Connected to AZURE IoT server")
-    if DEBUG : print("INFO : (main Thread) - Connected to AZURE IoT server")
+    client.connect()    
+    if LOG : logging.info(msg=F"(Primary Thread) - Connected to AZURE IoT server")
+    if DEBUG : print("INFO : (Primary Thread) - Connected to AZURE IoT server")
     try:
         ## adding timestamp to logfile
         client.on_message_received = message_received_handler
+        thread_item = ServiceWorkerThread(client)
+        thread_item.start()
 
         message_flag = True
         while True: 
             if (message_flag):
-                if LOG : logging.info(F"(main Thread) - Start Script to listen for remote requests")
+                if LOG : logging.info(F"(Primary Thread) - Start Script to listen for remote requests")
 
-                if DEBUG : print(F"INFO : (main Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
+                if DEBUG : print(F"INFO : (Primary Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
                 message_flag = False
                            
     
     except KeyboardInterrupt:
-        if DEBUG : print(F"WARNING : IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        if LOG : logging.warning(msg="IoTHubClient stopped by user")
+        if DEBUG : print(F"WARNING : (Primary Thread) - IoTHubClient stopped by user @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
+        if LOG : logging.warning(msg="(Primary Thread) - IoTHubClient stopped by user")
 
     finally:        
-        if DEBUG : print(F"WARNING : Shutting down IoTHubClient @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
-        if LOG : logging.warning(msg="Shutting down IoTHubClient")
+        if DEBUG : print(F"WARNING : (Primary Thread) - Shutting down IoTHubClient @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
+        if LOG : logging.warning(msg="(Primary Thread) - Shutting down IoTHubClient")
         client.shutdown()
 
 

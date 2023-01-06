@@ -8,7 +8,8 @@ cronjob.tab
 __pycache__
 
 #logfiles
-*.log
+*.log*
+!debug.log
 
 #dockerfile
 Dockerfile
