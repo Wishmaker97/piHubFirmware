@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-# from uuid import getnode as get_mac
 import datetime
 import logging.handlers as handlers
 import logging
@@ -138,10 +137,11 @@ class ServiceWorkerThread(threading.Thread):
         while True:
             ## adding timestamp to logfile
             if LOG : logging.info(F"(Secondary Thread) - Start Script to send timed report")
-
-            if DEBUG : print(F"INFO : (Secondary Thread) - Start Script to send timed report @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
+            if DEBUG : print(F"INFO : (Secondary Thread) - Start Script to send timed report @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)")
 
             try:
+                if DEBUG : print("INFO : (Secondary Thread) - entering try block")
+                global MSG_TXT_GET_ID
                 msg_txt_formatted = MSG_TXT_GET_ID.format()
                 message = Message(msg_txt_formatted)
                 
@@ -278,6 +278,7 @@ def main():
 
                 if DEBUG : print(F"INFO : (Primary Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
                 message_flag = False
+                pass
                            
     
     except KeyboardInterrupt:
