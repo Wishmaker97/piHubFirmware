@@ -146,14 +146,14 @@ class ServiceWorkerThread(threading.Thread):
                 
                 if DEBUG : print("INFO : (Secondary Thread) - Packaging message")
                 
-                message = Message(msg_txt)
+                message_request_list = Message(msg_txt)
                 
-                if DEBUG : print("INFO : (Secondary Thread) - Sending message - {msg}".format(msg=message))
+                if DEBUG : print("INFO : (Secondary Thread) - Sending message - {msg}".format(msg=message_request_list))
 
                 global response_for_service_worker
                 response_for_service_worker = True;
                     
-                client.send_message(message)
+                client.send_message(message_request_list)
 
                 if DEBUG : print("INFO : (Secondary Thread) - Waiting for response")
 
