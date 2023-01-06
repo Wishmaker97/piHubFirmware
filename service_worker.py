@@ -142,7 +142,7 @@ class ServiceWorkerThread(threading.Thread):
             try:
                 if DEBUG : print("INFO : (Secondary Thread) - entering try block")
                 msg_txt = '{{"cmd" : "get_meter_ids"}}'
-                if DEBUG : print("INFO : (Secondary Thread) - Packaging message - {msg}".format(msg=message))
+                if DEBUG : print("INFO : (Secondary Thread) - Packaging message")
 
                 message = Message(msg_txt)
                 
