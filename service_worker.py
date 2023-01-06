@@ -141,9 +141,8 @@ class ServiceWorkerThread(threading.Thread):
 
             try:
                 if DEBUG : print("INFO : (Secondary Thread) - entering try block")
-                global MSG_TXT_GET_ID
-                msg_txt_formatted = MSG_TXT_GET_ID.format()
-                message = Message(msg_txt_formatted)
+                msg_txt = '{{"cmd" : "get_meter_ids"}}'
+                message = Message(msg_txt)
                 
                 if DEBUG : print("INFO : (Secondary Thread) - Sending message - {}".format(message))
 
