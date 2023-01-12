@@ -274,14 +274,14 @@ def main():
         thread_item = ServiceWorkerThread(client)
         thread_item.start()
 
-        message_flag = True
-        while True: 
-            if (message_flag):
-                if LOG : logging.info(F"(Primary Thread) - Start Script to listen for remote requests")
+        # message_flag = True
+        # while True: 
+        #     if (message_flag):
+        #         if LOG : logging.info(F"(Primary Thread) - Start Script to listen for remote requests")
 
-                if DEBUG : print(F"INFO : (Primary Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
-                message_flag = False
-                pass
+        #         if DEBUG : print(F"INFO : (Primary Thread) - Start Script  to listen for remote requests @ {datetime.datetime.now().isoformat()[:23]+'Z'} (ISO)\n")
+        #         message_flag = False
+        #         pass
                            
     
     except KeyboardInterrupt:
