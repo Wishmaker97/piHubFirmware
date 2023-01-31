@@ -127,10 +127,10 @@ def main():
                     ## try block for communication with Smart meter
                     try:              
                        
-                        # meter_usage = meter_instance.getActivePower(smart_meter_address)
+                        meter_usage = meter_instance.getActivePower(smart_meter_address)
                         
                         ## dummy for testing
-                        meter_usage = 100 + int(random.random() * 20)
+                        # meter_usage = 100 + int(random.random() * 20)
                         
                         meter_report['value'] = int(meter_usage)
 
