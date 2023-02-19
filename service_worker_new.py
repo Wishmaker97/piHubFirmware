@@ -63,7 +63,6 @@ def send_meter_report(smart_meter_list, client):
                 meter_report['value'] = -1
                 if LOG : logging.exception(msg=F"(Primary Thread) - Data retrieval from {smart_meter} was unsuccessfull")
                 if DEBUG : print(F"EXCEPTION : (Primary Thread) - Data retrieval from {smart_meter} was unsuccessfull")
-
             
             finally:
                 meter_reports.append(meter_report)
@@ -84,9 +83,7 @@ def send_meter_report(smart_meter_list, client):
             except Exception as err:
                 if LOG : logging.exception(msg="(Primary Thread) - Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err))
                 if DEBUG : print("EXCEPTION : (Primary Thread) - Requested Report for {meter_id} were not sent, {error}".format(meter_id=meter['meter_id'], error=err)) 
-
-                         
-    
+   
     except Exception as err:
         if LOG : logging.exception(msg=err)
         if DEBUG : print(F"EXCEPTION : (Primary Thread) - {err}")
@@ -110,8 +107,8 @@ def message_received_handler(message):
         else:
             global response
             response = command_message
+    
     except Exception as err:
-
         if LOG : logging.exception(msg=F"remote request server failed to handle incomming command,\n {err}")
         if DEBUG : print(F"EXCEPTION : remote request server failed to handle incomming messsage,\n {err}")
 
@@ -159,7 +156,7 @@ class ServiceWorkerThread(threading.Thread):
 
                 if LOG : logging.info(msg="(Secondary Thread) - Requested meter list from server")
 
-                # self.client_object.on_message_received = message_received_handler
+                self.client_object.on_message_received = message_received_handler
 
                 global response
                 while (response==""):
@@ -199,10 +196,10 @@ class ServiceWorkerThread(threading.Thread):
                     ## try block for communication with Smart meter
                     try:              
                        
-                        meter_usage = meter_instance.getActivePower(smart_meter_address)
+                        # meter_usage = meter_instance.getActivePower(smart_meter_address)
                         
-                        ## dummy for testing
-                        # meter_usage = 100 + int(random.random() * 20)
+                        # dummy for testing
+                        meter_usage = 100 + int(random.random() * 20)
                         
                         meter_report['value'] = int(meter_usage)
 

@@ -15,8 +15,10 @@ import random
 
 from azure.iot.device import IoTHubDeviceClient, Message
 
-
+## choose DEBUG if you want console output on terminal
 DEBUG = True
+
+## choose LOG if you want log files generated
 LOG = False
 
 MSG_TXT_GET_ID = '{{"cmd" : "get_meter_ids"}}'
@@ -44,12 +46,14 @@ def message_received_handler(message):
 
 def main():
 
+    ## load .env file from the same directory
     load_dotenv('.env', override=True)
 
     DeviceId = str(os.getenv('DeviceId'))
     GroupSymmetricKey = str(os.getenv('GroupSymmetricKey'))
     HostName = str(os.getenv('HostName'))
 
+    ## get symmetic key from groupkey
     symmetricKey = derive_device_key(DeviceId, GroupSymmetricKey)
     client = IoTHubDeviceClient.create_from_symmetric_key(
             symmetric_key=symmetricKey,
