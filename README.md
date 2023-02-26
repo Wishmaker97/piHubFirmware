@@ -6,45 +6,108 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This project was developed to provide remote access and control along with periodic reportig for Smart meters working on the `DL/T645-2007` instruction set
+This project was developed to provide remote access and control along with periodic reporting for Smart meters working on the `DL/T645-2007` instruction set
 
 <!-- GETTING STARTED -->
 ## Getting Started
+* if there are multiple lines of instruction please copy them line by line
 
 ### Prerequisites
 
-Burn .img file into a empty SD card using Pi imager (https://www.raspberrypi.com/software/)
+   `Burn .img file into a empty SD card using Pi imager (https://www.Raspberrypi.com/software/)`
 
 ### Installation
 
-1. go to /server/piHubFirmware directory
+1. git clone
+
+   ```sh
+   mkdir server
+   cd server/
+   git clone https://github.com/Wishmaker97/piHubFirmware.git
+   ```
+
+2. go to /server/piHubFirmware directory
 
    ```sh
    cd /server/piHubFirmware
    ```
-2. update .env file
+3. update .env file to add the device_id
 
    ```sh
    sudo nano .env
    ```
 
-<!-- ROADMAP -->
-## Roadmap
+4. make venv
 
-- [x] periodic reporting based on Cronjob syntax from API configuration
-- [x] on demand reporting 
-- [x] remotely configurable 
-- [x] automatic github firmware update based on `commit ID` provided via API
-- [X] automatic NTP server update based on `ntp_server` provided via API
+   ```sh
+   python -m venv venv
+   ```
 
+5. activate venv
 
-### Built With
+   ```sh
+   source /venv/bin/activate
+   ```
 
-* [flask (for testing ONLY)](https://flask.palletsprojects.com/en/2.0.x/) test cosde at https://github.com/Wishmaker97/test_server
-* [paho MQTT client for python](https://www.eclipse.org/paho/index.php?page=clients/python/index.php)
+6. create Shell script
 
-Special Thanks to 
-* [施广源](https://zhuanlan.zhihu.com/p/378137714)
+   ```sh
+   touch /usr/local/sbin/service_worker.sh
+   ```
+
+7. add data to shell script (type ```sudo nano /usr/local/sbin/service_worker.sh``` first)
+
+   ```sh
+      #!/bin/bash
+      source "/home/pihub/server/piHubFirmware/venv/bin/activate"
+      cd /home/pihub/server/piHubFirmware/
+      python service_worker.py
+   ```
+
+8. create service script
+
+   ```sh
+   touch /etc/systemd/system/service_worker.service
+   ```
+
+9. add data to service script (type ```sudo nano /etc/systemd/system/service_worker.service``` first)
+
+   ```sh
+      [Unit]
+      Description=MQTT service worker
+      [Service]
+      Restart=always
+      ExecStartPre=/bin/sleep 10
+      ExecStart=/usr/local/sbin/service_worker.sh
+      PIDFile=/var/run/service_worker.pid
+      [Install]
+      WantedBy=multi-user.target
+   ```
+
+10. create service script
+
+   ```sh
+   chmod u+x /usr/local/sbin/service_worker.sh
+   ```
+
+11. create service script
+
+   ```sh
+   chmod u+x service_worker.py
+   ```
+
+12. create service script
+
+   ```sh
+   sudo systemctl start service_worker.service
+   ```
+
+13. create service script
+
+   ```sh
+   sudo systemctl enable service_worker.service
+   ```
+
 
 
 <!-- CONTACT -->
@@ -59,11 +122,4 @@ Special Thanks to
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/vishmika-fernando-435923116/
-
-=======
-username: piHub
-password: admin123
-
-hostname: pihub
-SSH: password no certificates
 
