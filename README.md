@@ -29,13 +29,14 @@ This project was developed to provide remote access and control along with perio
 2. go to /server/piHubFirmware directory
 
    ```sh
-   cd /server/piHubFirmware
+   cd /piHubFirmware
    ```
 3. update .env file to add the device_id
 
    ```sh
    sudo nano .env
    ```
+   copy and paste the text from https://jstrieb.github.io/link-lock/#eyJ2IjoiMC4wLjEiLCJlIjoiSEEyRTNYblFjbjBUZm1iTmtzOWx3UDlKenlXeFByTUpjNHFyUGdSd0RZZEhXR0FtSmpuVEdBdkJhRlNBZXpUbVNVTkhjdnA5N084NXpiMmllMStzSUxLeVJtOE9QbWtSM2NrUjU2bW1qa009IiwiaCI6ImFzayBzdW5ueSIsInMiOiIwdnRUWDAxZlVKMzZMc3lvRXlRYnpRPT0iLCJpIjoiZzBqTjdHU2k1NkZzbDBETyJ9 Remember to update the data for the device_id
 
 4. make venv
 
