@@ -1,0 +1,5 @@
+COM_PORT = "/dev/ttyUSB0"
+GroupSymmetricKey = "ok5NJJrAuTtQsrfUcVHibcGhpTHzTWMHk8c6krAtOM6pUKVdHqQXavl91Y3DVEQT2H1QL98u1JF6esBaTHGBLQ=="
+HostName = "meter-IoT-hub.azure-devices.net"
+PeriodValue = "3600"
+DeviceId = "testing_node"
