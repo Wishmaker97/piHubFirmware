@@ -26,10 +26,10 @@ This project was developed to provide remote access and control along with perio
    git clone https://github.com/Wishmaker97/piHubFirmware.git
    ```
 
-2. go to /server/piHubFirmware directory
+2. go to /server/piHubFirmware/ directory
 
    ```sh
-   cd /piHubFirmware
+   cd /piHubFirmware/
    ```
 3. update .env file to add the device_id
 
@@ -49,14 +49,19 @@ This project was developed to provide remote access and control along with perio
    ```sh
    source /venv/bin/activate
    ```
+6. activate venv
 
-6. create Shell script
+   ```sh
+   python pip install -r requirements.txt
+   ```
+
+7. create Shell script
 
    ```sh
    touch /usr/local/sbin/service_worker.sh
    ```
 
-7. add data to shell script (type ```sudo nano /usr/local/sbin/service_worker.sh``` first)
+8. add data to shell script (type ```sudo nano /usr/local/sbin/service_worker.sh``` first)
 
    ```sh
       #!/bin/bash
@@ -65,13 +70,13 @@ This project was developed to provide remote access and control along with perio
       python service_worker.py
    ```
 
-8. create service script
+9. create service script
 
    ```sh
    touch /etc/systemd/system/service_worker.service
    ```
 
-9. add data to service script (type ```sudo nano /etc/systemd/system/service_worker.service``` first)
+10. add data to service script (type ```sudo nano /etc/systemd/system/service_worker.service``` first)
 
    ```sh
       [Unit]
@@ -85,25 +90,25 @@ This project was developed to provide remote access and control along with perio
       WantedBy=multi-user.target
    ```
 
-10. create service script
+11. create service script
 
    ```sh
    chmod u+x /usr/local/sbin/service_worker.sh
    ```
 
-11. create service script
+12. create service script
 
    ```sh
    chmod u+x service_worker.py
    ```
 
-12. create service script
+13. create service script
 
    ```sh
    sudo systemctl start service_worker.service
    ```
 
-13. create service script
+14. create service script
 
    ```sh
    sudo systemctl enable service_worker.service
