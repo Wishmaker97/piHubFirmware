@@ -26,10 +26,10 @@ This project was developed to provide remote access and control along with perio
    git clone https://github.com/Wishmaker97/piHubFirmware.git
    ```
 
-2. go to /server/piHubFirmware/ directory
+2. go to server/piHubFirmware/ directory
 
    ```sh
-   cd /piHubFirmware/
+   cd piHubFirmware/
    ```
 3. update .env file to add the device_id
 
@@ -47,18 +47,18 @@ This project was developed to provide remote access and control along with perio
 5. activate venv
 
    ```sh
-   source /venv/bin/activate
+   source venv/bin/activate
    ```
 6. activate venv
 
    ```sh
-   python pip install -r requirements.txt
+   sudo pip install -r requirements.txt
    ```
 
 7. create Shell script
 
    ```sh
-   touch /usr/local/sbin/service_worker.sh
+   sudo touch /usr/local/sbin/service_worker.sh
    ```
 
 8. add data to shell script (type ```sudo nano /usr/local/sbin/service_worker.sh``` first)
@@ -73,7 +73,7 @@ This project was developed to provide remote access and control along with perio
 9. create service script
 
    ```sh
-   touch /etc/systemd/system/service_worker.service
+   sudo touch /etc/systemd/system/service_worker.service
    ```
 
 10. add data to service script (type ```sudo nano /etc/systemd/system/service_worker.service``` first)
@@ -93,19 +93,19 @@ This project was developed to provide remote access and control along with perio
 11. create service script
 
    ```sh
-   chmod u+x /usr/local/sbin/service_worker.sh
+   sudo chmod u+x /usr/local/sbin/service_worker.sh
    ```
 
 12. create service script
 
    ```sh
-   chmod u+x service_worker.py
+   sudo chmod u+x service_worker.py
    ```
 
 13. create service script
 
    ```sh
-   sudo systemctl start service_worker.service
+   sudo sudo systemctl start service_worker.service
    ```
 
 14. create service script
