@@ -105,7 +105,7 @@ This project was developed to provide remote access and control along with perio
 13. create service script
 
    ```sh
-   sudo sudo systemctl start service_worker.service
+   sudo systemctl start service_worker.service
    ```
 
 14. create service script
