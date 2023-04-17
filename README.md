@@ -52,7 +52,7 @@ This project was developed to provide remote access and control along with perio
 6. activate venv
 
    ```sh
-   sudo pip install -r requirements.txt
+   pip install -r requirements.txt
    ```
 
 7. create Shell script
